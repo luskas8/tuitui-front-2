@@ -1,0 +1,19 @@
+@import "./article-list.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer {
+  svg {
+    @apply w-full h-full;
+  }
+
+  button > svg {
+    @apply w-5 h-5 fill-current;
+  }
+
+  a > svg {
+    @apply w-5 h-5 fill-current;
+  }
+}

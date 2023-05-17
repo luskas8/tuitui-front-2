@@ -1,0 +1,5 @@
+@import "./article-card.css";
+
+.article-list--title + .article-list--items {
+  @apply mt-2;
+}
