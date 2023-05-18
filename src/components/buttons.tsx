@@ -60,3 +60,13 @@ Button.Outline = ({ children, small, ...props }: ButtonProps) => {
     </button>
   );
 }
+
+Button.Success = ({ children, small, ...props }: ButtonProps) => {
+  const windowSize = useWindowSize();
+
+  return (
+    <button {...props} className={`flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {(windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    </button>
+  );
+}
