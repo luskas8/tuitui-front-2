@@ -84,8 +84,10 @@ export default function ArticlePage() {
 }
 
 function DeleteConfirmationModal() {
+  const { toggleVisibility } = useModal();
+
   return (
-    <Modal>
+    <Modal onClickFaceDismiss={false}>
       <Modal.Header>
         <Modal.Title>Confirmar ação</Modal.Title>
       </Modal.Header>
@@ -93,7 +95,7 @@ function DeleteConfirmationModal() {
         <p>Tem certeza que deseja excluir este artigo?</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button>Cancelar ação</Button>
+        <Button onClick={toggleVisibility}>Cancelar ação</Button>
         <Button.Danger>Sim, excluir!</Button.Danger>
       </Modal.Footer>
     </Modal>
