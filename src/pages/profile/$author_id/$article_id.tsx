@@ -9,7 +9,6 @@ import { Link } from "../../../components/links";
 import Modal from "../../../components/modal";
 import { useModal } from "../../../hooks/useModal";
 import Layout from "../../../layouts/global";
-import { sleep } from "../../../utilities/sleep";
 
 interface ArticlePagePropsProps {
   asyncArticle: Promise<Article>;
@@ -47,10 +46,10 @@ export default function ArticlePage() {
                       </h2>
                     </div>
                     <ButtonGroup className="py-2">
-                      <Button>
+                      <Link to={`/profile/${article.author._id}/${article._id}/edit`}>
                         <Edit />
                         Editar
-                      </Button>
+                      </Link>
                       <Button.Danger onClick={toggleVisibility}>
                         <DeleteOutlined />
                         Excluir
@@ -70,8 +69,6 @@ export default function ArticlePage() {
                         {tag.tagName}
                       </Link.Default>
                     ))}
-
-                    <Button.Default className="text-xs hover:bg-slate-100 px-2 py-1 rounded-lg">+ Adicionar tag</Button.Default>
                   </footer>
                 </>
               )}
@@ -103,8 +100,6 @@ function DeleteConfirmationModal() {
 }
 
 async function getArticles(): Promise<Article> {
-  await sleep(1000);
-
   return {
     title: "Hello World",
     _id:"434324",

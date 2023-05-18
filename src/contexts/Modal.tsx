@@ -13,7 +13,7 @@ interface ModalProviderProps {
 
 
 export default function ModalProvider({ children }: ModalProviderProps) {
-  const [modalVisibilityState, updateModalVisibility] = useState<boolean>(true);
+  const [modalVisibilityState, updateModalVisibility] = useState<boolean>(false);
 
   function toggleVisibility() {
     updateModalVisibility(currentVisibility => !currentVisibility);
