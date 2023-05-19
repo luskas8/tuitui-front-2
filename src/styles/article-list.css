@@ -1,5 +1,7 @@
-@import "./article-card.css";
-
 .article-list--title + .article-list--items {
   @apply mt-2;
+}
+
+.article-list--items {
+  @apply flex flex-col gap-6;
 }
