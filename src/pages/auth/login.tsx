@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ReactComponent as Branding } from "../../assets/branding/Branding.svg";
+import { ReactComponent as Branding } from "../../assets/branding/branding.svg";
 import { ReactComponent as Tuitui } from "../../assets/branding/tuitui.svg";
 import { FormProvider } from "../../contexts/Form";
 import { useForm } from "../../hooks";
