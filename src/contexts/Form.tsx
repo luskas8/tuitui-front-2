@@ -1,5 +1,6 @@
-import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import lodash from 'lodash';
+import { createContext, useCallback, useEffect, useState } from 'react';
+import { BaseChildrenProps } from '../@types/global';
 
 interface FormContextData {
   initialValues: { [key: string]: string };
@@ -17,9 +18,7 @@ interface FormContextData {
 
 export const FormContext = createContext<FormContextData>({} as FormContextData);
 
-interface FormProviderProps {
-  children: ReactNode;
-}
+interface FormProviderProps extends BaseChildrenProps {}
 
 export const FormProvider = ({ children }: FormProviderProps) => {
   const [initialValues, setInitialValues] = useState<any>({});
