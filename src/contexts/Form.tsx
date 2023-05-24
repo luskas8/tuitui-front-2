@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
-import lodash, { set } from 'lodash';
+import lodash from 'lodash';
 
 interface FormContextData {
   initialValues: { [key: string]: string };
