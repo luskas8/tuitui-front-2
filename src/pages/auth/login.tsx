@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ReactComponent as Branding } from "../../assets/branding/Branding.svg";
+import { ReactComponent as Branding } from "../../assets/branding/branding.svg";
 import { ReactComponent as Tuitui } from "../../assets/branding/tuitui.svg";
 import { BUTTON_GROUP_ORIENTATION, Button, ButtonGroup } from "../../components/buttons";
 import { Form } from "../../components/form";
-import { Link } from "../../components/links";
 import { Input } from "../../components/inputs";
+import { Link } from "../../components/links";
 
 export default function Login() {
   const navigate = useNavigate();
