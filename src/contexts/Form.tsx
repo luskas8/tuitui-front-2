@@ -1,12 +1,15 @@
-import { createContext, forwardRef, ReactNode, useCallback, useEffect, useState } from 'react';
-import lodash from 'lodash';
+import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
+import lodash, { set } from 'lodash';
 
 interface FormContextData {
+  initialValues: { [key: string]: string };
+  updateInitialValues: (values: { [key: string]: string }) => void;
   isSubmitting: boolean;
+  updateSubmitting: (isSubmitting: boolean) => void;
   hasUnsavedChanges: boolean;
   updateValue: (key: string, value: string) => void;
   updateErrors: (errors: any) => void;
-  hableOnChange: (e: any) => void;
+  handleOnChange: (e: any) => void;
   errors: { [key: string]: string };
   values: { [key: string]: string };
   reset: () => void;
@@ -14,21 +17,13 @@ interface FormContextData {
 
 export const FormContext = createContext<FormContextData>({} as FormContextData);
 
-interface ChildrenProps {
-  values: { [key: string]: string };
-  errors: { [key: string]: string };
-  hableOnChange: (e: any) => void;
-}
-
 interface FormProviderProps {
-  className?: string | undefined;
-  initialValues: { [key: string]: string };
-  children: (props: ChildrenProps) => ReactNode;
-  onSubmit: (values: any) => Promise<void>;
+  children: ReactNode;
 }
 
-export const FormProvider = forwardRef<HTMLFormElement, FormProviderProps>(({ children, initialValues, onSubmit, className }, formRef) => {
-  const [values, setValues] = useState<any>(initialValues);
+export const FormProvider = ({ children }: FormProviderProps) => {
+  const [initialValues, setInitialValues] = useState<any>({});
+  const [values, setValues] = useState<any>({});
   const [errors, setErrors] = useState<any>({ "email": "Erro de email" });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
@@ -36,16 +31,16 @@ export const FormProvider = forwardRef<HTMLFormElement, FormProviderProps>(({ ch
   useEffect(() => {
     if (!lodash.isEqual(values, initialValues)) {
       setHasUnsavedChanges(true);
-    } else {
-      setHasUnsavedChanges(false);
     }
+
+    setHasUnsavedChanges(false);
   }, [values]);
 
   const updateValue = useCallback((key: string, value: string) => {
     setValues((values: any) => ({...values, [key]: value}));
   }, []);
 
-  const hableOnChange = (e: any) => {
+  const handleOnChange = (e: any) => {
     const { name, value } = e.target;
     updateValue(name, value);
   }
@@ -55,28 +50,23 @@ export const FormProvider = forwardRef<HTMLFormElement, FormProviderProps>(({ ch
   }, []);
 
   const reset = useCallback(() => {
-    setValues(initialValues);
+    setValues((_: any) => initialValues);
     setErrors({});
     setHasUnsavedChanges(false);
-  }, [initialValues]);
+  }, []);
 
-  useEffect(() => {
-    console.log(hasUnsavedChanges)
-  }, [hasUnsavedChanges])
+  const updateSubmitting = useCallback((isSubmittingStatus: boolean) => {
+    setIsSubmitting(_ => isSubmittingStatus);
+  }, []);
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    console.log("AAAAAA");
-    setIsSubmitting(_ => true);
-    onSubmit(values);
-    setIsSubmitting(_ => false);
-  }
+  const updateInitialValues = useCallback((initialValues: { [key: string]: string }) => {
+    setInitialValues((_: any) => initialValues);
+    setValues((_: any) => initialValues);
+  }, []);
 
   return (
-    <FormContext.Provider value={{ values, errors, updateErrors, updateValue, hableOnChange, reset, hasUnsavedChanges, isSubmitting }}>
-      <form onSubmit={handleSubmit} className={className} ref={formRef}>
-        {children({ values, errors, hableOnChange })}
-      </form>
+    <FormContext.Provider value={{ values, errors, updateErrors, updateValue, handleOnChange, reset, hasUnsavedChanges, isSubmitting, updateSubmitting, initialValues, updateInitialValues }}>
+      {children}
     </FormContext.Provider>
   )
-});
+}

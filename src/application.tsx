@@ -1,12 +1,15 @@
+import { FormProvider } from "./contexts/Form";
 import ModalProvider from "./contexts/Modal";
-import Routes from "./routes"
+import Routes from "./routes";
 
-import "./styles/global.css"
+import "./styles/global.css";
 
 export default function Application() {
   return (
-    <ModalProvider>
-      <Routes />
-    </ModalProvider>
+    <FormProvider>
+      <ModalProvider>
+        <Routes />
+      </ModalProvider>
+    </FormProvider>
   );
 }

@@ -18,7 +18,7 @@ export default function EditArticlePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(inputRef.current)
+    // console.log(inputRef.current)
   }, [])
 
   return (
@@ -31,7 +31,7 @@ export default function EditArticlePage() {
             </Button.Default>
             <h1>Editando artigo</h1>
           </nav>
-          <header className="flex justify-between items-center">
+          <header className="flex flex-wrap justify-between items-center">
             <div>
               <input className="font-bold hover:bg-slate-100 px-2 py-1 rounded-lg" placeholder="+ Adicionar tag" value={article.title} type="text" />
             </div>
