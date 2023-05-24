@@ -3,7 +3,7 @@ import { ReactComponent as ArrowLeft } from "../assets/icons/ArrowLeft.svg";
 import { BUTTON_GROUP_ORIENTATION, Button, ButtonGroup } from "./buttons";
 // import { ReactComponent as Plus } from "../assets/icons/Plus.svg";
 import { ReactComponent as Edit } from "../assets/icons/Edit.svg";
-import { useModal } from "../hooks/useModal";
+import { useModal } from "../hooks";
 import Modal from "./modal";
 
 

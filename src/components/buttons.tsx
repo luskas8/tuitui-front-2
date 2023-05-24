@@ -13,6 +13,7 @@ interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   small?: boolean;
+  useIconRule?: boolean;
 }
 
 export function ButtonGroup({ orientation = BUTTON_GROUP_ORIENTATION.HORIZONTAL, children, className}: ButtonGroupProps) {
@@ -23,12 +24,12 @@ export function ButtonGroup({ orientation = BUTTON_GROUP_ORIENTATION.HORIZONTAL,
   );
 }
 
-export function Button({ children, small, ...props }: ButtonProps) {
+export function Button({ children, small, useIconRule = true, ...props }: ButtonProps) {
   const windowSize = useWindowSize();
 
   return (
-    <button {...props} className={`flex items-center gap-1 bg-blue-200 hover:bg-violet-200 text-black font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
-      {(windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    <button {...props} className={`flex items-center gap-1 bg-violet-300 hover:bg-violet-400 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
     </button>
   );
 }
@@ -41,32 +42,42 @@ Button.Default = ({ children, ...props }: ButtonProps) => {
   );
 }
 
-Button.Danger = ({ children, small, ...props }: ButtonProps) => {
+Button.Danger = ({ children, small, useIconRule = true, ...props }: ButtonProps) => {
   const windowSize = useWindowSize();
 
   return (
-    <button {...props} className={`flex items-center gap-1 bg-red-400 hover:bg-red-500 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
-      {(windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    <button {...props} className={`flex items-center gap-1 bg-red-300 hover:bg-red-400 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
     </button>
   );
 }
 
-Button.Outline = ({ children, small, ...props }: ButtonProps) => {
+Button.Outline = ({ children, small, useIconRule = true, ...props }: ButtonProps) => {
   const windowSize = useWindowSize();
 
   return (
-    <button {...props} className={`flex items-center gap-1 bg-transparent text-violet-400 hover:text-violet-600 font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded border border-violet-400 hover:border-violet-600`}>
-      {(windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    <button {...props} className={`flex items-center gap-1 bg-transparent text-violet-300 hover:text-violet-400 font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded border border-violet-300 hover:border-violet-400`}>
+      {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
     </button>
   );
 }
 
-Button.Success = ({ children, small, ...props }: ButtonProps) => {
+Button.Terciary = ({ children, small, useIconRule = true, ...props }: ButtonProps) => {
   const windowSize = useWindowSize();
 
   return (
-    <button {...props} className={`flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
-      {(windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    <button {...props} className={`flex items-center gap-1 bg-transparent text-violet-300 hover:text-violet-400 font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    </button>
+  );
+}
+
+Button.Success = ({ children, small, useIconRule = true, ...props }: ButtonProps) => {
+  const windowSize = useWindowSize();
+
+  return (
+    <button {...props} className={`flex items-center gap-1 bg-emerald-400 hover:bg-emerald-500 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
     </button>
   );
 }

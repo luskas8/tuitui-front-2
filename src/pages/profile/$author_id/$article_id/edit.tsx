@@ -18,12 +18,12 @@ export default function EditArticlePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(inputRef.current)
+    // console.log(inputRef.current)
   }, [])
 
   return (
     <Layout>
-      <div className="w-full h-full flex flex-col bg-gray-200 items-center">
+      <div className="w-full h-full flex flex-col items-center">
         <div className="article-card w-full max-w-2xl min-w-[260px] rounded overflow-hidden shadow-lg px-6 py-4 bg-white">
           <nav className="flex items-center gap-2 py-1 mb-2 border-b-2 border-slate-100">
             <Button.Default onClick={() => navigate(-1)} className="w-5 h-5">
@@ -31,16 +31,16 @@ export default function EditArticlePage() {
             </Button.Default>
             <h1>Editando artigo</h1>
           </nav>
-          <header className="flex justify-between items-center">
+          <header className="flex flex-wrap justify-between items-center">
             <div>
               <input className="font-bold hover:bg-slate-100 px-2 py-1 rounded-lg" placeholder="+ Adicionar tag" value={article.title} type="text" />
             </div>
             <ButtonGroup className="py-2">
-              <Button.Danger small onClick={() => navigate(-1)}>
+              <Button.Danger onClick={() => navigate(-1)}>
                 <Close />
                 Cancelar
               </Button.Danger>
-              <Button.Success small>
+              <Button.Success>
                 <CheckCircle />
                 Salvar
               </Button.Success>

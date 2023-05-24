@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import Navigation from '../components/navigation';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,7 +11,7 @@ interface LayoutProps {
 export default function Layout ({ children, classname }: LayoutProps) {
   return (
     <div className='w-full min-h-screen bg-slate-300 flex flex-col'>
-      {/* <Navigation /> */}
+      <Navigation />
       <div data-name='app-content' className={String('w-full h-full px-5 py-7 overflow-hidden ').concat(classname ?? '')}>
         {children}
       </div>

@@ -7,7 +7,7 @@ import { ReactComponent as Edit } from "../../../assets/icons/Edit.svg";
 import { Button, ButtonGroup } from "../../../components/buttons";
 import { Link } from "../../../components/links";
 import Modal from "../../../components/modal";
-import { useModal } from "../../../hooks/useModal";
+import { useModal } from "../../../hooks";
 import Layout from "../../../layouts/global";
 
 interface ArticlePagePropsProps {
@@ -23,7 +23,7 @@ export default function ArticlePage() {
   return (
     <Layout>
       <DeleteConfirmationModal />
-      <div className="w-full h-full flex flex-col bg-gray-200 items-center">
+      <div className="w-full h-full flex flex-col items-center">
         <div className="article-card w-full max-w-2xl min-w-[260px] rounded overflow-hidden shadow-lg px-6 py-4 bg-white">
           <nav className="flex items-center gap-2 py-1 mb-2 border-b-2 border-slate-100">
             <Button.Default onClick={() => navigate(-1)} className="w-5 h-5">
@@ -92,7 +92,7 @@ function DeleteConfirmationModal() {
         <p>Tem certeza que deseja excluir este artigo?</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={toggleVisibility}>Cancelar ação</Button>
+        <Button.Outline onClick={toggleVisibility}>Cancelar ação</Button.Outline>
         <Button.Danger>Sim, excluir!</Button.Danger>
       </Modal.Footer>
     </Modal>

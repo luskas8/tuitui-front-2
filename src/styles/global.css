@@ -1,4 +1,5 @@
 @import "./article-list.css";
+@import "./inputs.css";
 
 @tailwind base;
 @tailwind components;

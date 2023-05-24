@@ -1,7 +1,7 @@
 import { useLoaderData } from "react-router-dom";
-import { Article, ArticleListLoaderProps } from "../@types/article";
-import ArticlesList from "../components/articles-list";
-import Layout from "../layouts/global";
+import { Article, ArticleListLoaderProps } from "../../@types/article";
+import ArticlesList from "../../components/articles-list";
+import Layout from "../../layouts/global";
 
 export default function Homepage() {
   const { articles } = useLoaderData() as ArticleListLoaderProps;

@@ -1,0 +1,19 @@
+.select option:selected {
+  @apply bg-black;
+}
+
+.input-select--list {
+  @apply bg-white py-1 w-full absolute top-[100%] left-0 drop-shadow-sm;
+}
+
+.input-select--list-item {
+  @apply px-2 cursor-pointer;
+}
+
+.input-select--list-item__disabled {
+  @apply px-2 cursor-context-menu;
+}
+
+.input-select--list-item:hover {
+  @apply bg-slate-300;
+}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useModal } from '../hooks/useModal';
+import { useModal } from '../hooks';
 import { Button } from './buttons';
 import { ReactComponent as Close} from '../assets/icons/Close.svg';
 
