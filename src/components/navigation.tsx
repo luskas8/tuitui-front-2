@@ -57,9 +57,11 @@ function SearchGroup({ values, errors, handleOnChange }: ChildrenProps) {
     if (e.key === "Enter") {
       console.log("enter");
     }
+
+    updateListItems(_ => [])
   }
 
-  const handleItemClick = (tagName: string) => (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+  const handleItemClick = (tagName: string) => (_: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
     handleOnChange({
       target: {
         name: "search",
@@ -72,6 +74,10 @@ function SearchGroup({ values, errors, handleOnChange }: ChildrenProps) {
   useEffect(() => {
     if (showList) {
       inputRef.current?.focus();
+    }
+
+    if (errors.length) {
+      return;
     }
   }, [showList]);
 
