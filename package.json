@@ -20,6 +20,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@hookform/resolvers": "^3.1.0",
     "@types/lodash": "^4.14.194",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
