@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect } from 'react';
 import { useForm } from '../hooks';
-import { z } from 'Zod';
+import { z } from 'zod';
 
 export interface ChildrenProps {
   values: { [key: string]: any };

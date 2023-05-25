@@ -6,7 +6,7 @@ import { BUTTON_GROUP_ORIENTATION, Button, ButtonGroup } from "../../components/
 import { Form } from "../../components/form";
 import { Input } from "../../components/inputs";
 import { Link } from "../../components/links";
-import { z } from "Zod";
+import { z } from "zod";
 import { useAuth, useForm } from "../../hooks";
 
 export default function Login() {
