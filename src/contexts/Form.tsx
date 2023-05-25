@@ -1,18 +1,19 @@
 import lodash from 'lodash';
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { BaseChildrenProps } from '../@types/global';
+import { isEmpty } from 'lodash';
 
 interface FormContextData {
-  initialValues: { [key: string]: string };
+  initialValues: { [key: string]: any };
   updateInitialValues: (values: { [key: string]: string }) => void;
   isSubmitting: boolean;
   updateSubmitting: (isSubmitting: boolean) => void;
   hasUnsavedChanges: boolean;
   updateValue: (key: string, value: string) => void;
-  updateErrors: (errors: any) => void;
+  updateErrors: (key: string, value: string) => void;
   handleOnChange: (e: any) => void;
-  errors: { [key: string]: string };
-  values: { [key: string]: string };
+  errors: { [key: string]: any };
+  values: { [key: string]: any };
   reset: () => void;
 }
 
@@ -23,7 +24,7 @@ interface FormProviderProps extends BaseChildrenProps {}
 export const FormProvider = ({ children }: FormProviderProps) => {
   const [initialValues, setInitialValues] = useState<any>({});
   const [values, setValues] = useState<any>({});
-  const [errors, setErrors] = useState<any>({ "email": "Erro de email" });
+  const [errors, setErrors] = useState<any>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
 
@@ -40,12 +41,19 @@ export const FormProvider = ({ children }: FormProviderProps) => {
   }, []);
 
   const handleOnChange = (e: any) => {
+    if (!isEmpty(errors)) {
+      setErrors((errors: any) => {
+        const newErrors = {...errors};
+        delete newErrors[e.target.name];
+        return newErrors;
+      });
+    }
     const { name, value } = e.target;
     updateValue(name, value);
   }
 
-  const updateErrors = useCallback((errors: any) => {
-    setErrors((oldErros: any) => ({...oldErros, ...errors}));
+  const updateErrors = useCallback((key: string, value: string) => {
+    setErrors((errors: any) => ({...errors, [key]: value}));
   }, []);
 
   const reset = useCallback(() => {

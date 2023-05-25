@@ -1,3 +1,4 @@
+import { AuthenticationProvider } from "./contexts/Authentication";
 import { FormProvider } from "./contexts/Form";
 import ModalProvider from "./contexts/Modal";
 import Routes from "./routes";
@@ -8,7 +9,9 @@ export default function Application() {
   return (
     <FormProvider>
       <ModalProvider>
-        <Routes />
+        <AuthenticationProvider>
+          <Routes />
+        </AuthenticationProvider>
       </ModalProvider>
     </FormProvider>
   );

@@ -10,6 +10,7 @@ interface BaseModalProps {
 
 interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  cancelButton?: boolean;
 }
 
 interface ModalTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
@@ -48,13 +49,13 @@ export default function Modal({ children, onClickFaceDismiss = true }: BaseModal
   );
 }
 
-Modal.Header = ({ children, ...props }: ModalHeaderProps) => {
+Modal.Header = ({ children, cancelButton = false, ...props }: ModalHeaderProps) => {
   const { toggleVisibility } = useModal();
 
   return (
     <header {...props} className="modal-header flex justify-between items-center border-b border-slate-100 pt-2 pb-1 px-4">
       {children}
-      <Button.Default onClick={toggleVisibility} className='bg-slate-300 hover:bg-slate-400 text-white p-2 rounded-full'>
+      <Button.Default disabled={cancelButton} onClick={toggleVisibility} className='bg-slate-300 hover:bg-slate-400 text-white p-2 rounded-full'>
         <Close />
       </Button.Default>
     </header>

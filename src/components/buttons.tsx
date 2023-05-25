@@ -1,4 +1,5 @@
 import useWindowSize from "../hooks/useWindowSize";
+import { ReactComponent as Loading } from "../assets/icons/Loading.svg"
 
 export enum BUTTON_GROUP_ORIENTATION {
   HORIZONTAL = "horizontal",
@@ -13,6 +14,7 @@ interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   small?: boolean;
+  loading?: boolean;
   useIconRule?: boolean;
 }
 
@@ -42,11 +44,12 @@ Button.Default = ({ children, ...props }: ButtonProps) => {
   );
 }
 
-Button.Danger = ({ children, small, useIconRule = true, ...props }: ButtonProps) => {
+Button.Danger = ({ children, small, useIconRule = true, loading, ...props }: ButtonProps) => {
   const windowSize = useWindowSize();
 
   return (
-    <button {...props} className={`flex items-center gap-1 bg-red-300 hover:bg-red-400 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+    <button {...props} className={`flex items-center gap-1 bg-red-300 hover:bg-red-400 disabled:bg-red-400 disabled:cursor-not-allowed text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {loading && <Loading className="animate-spin" />}
       {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
     </button>
   );
@@ -72,11 +75,12 @@ Button.Terciary = ({ children, small, useIconRule = true, ...props }: ButtonProp
   );
 }
 
-Button.Success = ({ children, small, useIconRule = true, ...props }: ButtonProps) => {
+Button.Success = ({ children, small, useIconRule = true, loading, ...props }: ButtonProps) => {
   const windowSize = useWindowSize();
 
   return (
-    <button {...props} className={`flex items-center gap-1 bg-emerald-400 hover:bg-emerald-500 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+    <button {...props} className={`flex items-center gap-1 bg-emerald-400 hover:bg-emerald-500 disabled:bg-emerald-500 disabled:cursor-not-allowed text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {loading && <Loading className="animate-spin" />}
       {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
     </button>
   );
