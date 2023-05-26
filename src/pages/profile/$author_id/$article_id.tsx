@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData, useNavigate } from "react-router-dom";
+import { LoaderFunctionArgs, redirect, useLoaderData, useNavigate } from "react-router-dom";
 import { Article } from "../../../@types/article";
 import { ReactComponent as ArrowLeft } from "../../../assets/icons/ArrowLeft.svg";
 import { ReactComponent as DeleteOutlined } from "../../../assets/icons/DeleteOutlined.svg";
@@ -94,7 +94,11 @@ function DeleteConfirmationModal() {
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<ArticlePagePropsProps> {
   const { article_id } = params as { article_id: string };
-  const article = await retrieveArticleByID(article_id) as Article;
+  const article = await retrieveArticleByID(article_id);
+
+  if ('status' in article) {
+    return redirect('/auth/login') as unknown as ArticlePagePropsProps;
+  }
 
   return { article };
 }

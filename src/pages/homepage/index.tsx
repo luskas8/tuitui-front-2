@@ -1,5 +1,5 @@
 import { redirect, useLoaderData } from "react-router-dom";
-import { Article, ArticleListLoaderProps } from "../../@types/article";
+import { ArticleListLoaderProps } from "../../@types/article";
 import ArticlesList from "../../components/articles-list";
 import Layout from "../../layouts/global";
 import { useAuth } from "../../hooks";
@@ -25,6 +25,10 @@ export default function Homepage() {
 
 export async function loader(): Promise<ArticleListLoaderProps> {
   const userID = retriveUserID();
-  const articles: Article[] = await retrieveArticlesByAuthorID(userID!) as Article[];
+  const articles = await retrieveArticlesByAuthorID(userID);
+
+  if ('status' in articles) {
+    return redirect("/auth/login") as unknown as ArticleListLoaderProps;
+  }
   return { articles }
 }

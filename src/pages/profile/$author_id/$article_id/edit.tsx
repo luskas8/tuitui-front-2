@@ -8,6 +8,7 @@ import { Button, ButtonGroup } from "../../../../components/buttons";
 import Layout from "../../../../layouts/global";
 import { retrieveArticleByID, saveArticleInformations } from "../../../../services/articles";
 import { retriveUserID } from "../../../../utilities/localStorage";
+import { useAuth } from "../../../../hooks";
 
 interface ArticlePagePropsProps {
   article: Article;
@@ -15,6 +16,11 @@ interface ArticlePagePropsProps {
 
 export default function EditArticlePage() {
   const { article } = useLoaderData() as ArticlePagePropsProps;
+  const { authenticated } = useAuth();
+
+  if (!authenticated) {
+    return redirect("/auth/login");
+  }
 
   const [articleInfo, setArticleInfo] = useState<Article>(article);
 
@@ -109,11 +115,14 @@ export default function EditArticlePage() {
 export async function loader({ params }: LoaderFunctionArgs): Promise<ArticlePagePropsProps> {
   const loggedUserID = retriveUserID();
   const { article_id } = params as { article_id: string };
-  const article = await retrieveArticleByID(article_id) as Article;
+  const article = await retrieveArticleByID(article_id);
+
+  if ('status' in article) {
+    return redirect("/auth/login") as unknown as ArticlePagePropsProps;
+  }
 
   if (loggedUserID !== article.author._id) {
-    redirect("/homepage");
-    return { article: {} as Article };
+    return redirect("/homepage") as unknown as ArticlePagePropsProps;
   }
 
   return { article };

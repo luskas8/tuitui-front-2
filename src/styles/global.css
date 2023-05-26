@@ -1,5 +1,6 @@
 @import "./article-list.css";
 @import "./inputs.css";
+@import "./alert.css";
 
 @tailwind base;
 @tailwind components;

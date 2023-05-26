@@ -51,7 +51,7 @@ export function retriveUserID() {
   const userID = localStorage.getItem('X-User-ID');
 
   if (!userID) {
-    return null;
+    return "";
   }
 
   return userID;

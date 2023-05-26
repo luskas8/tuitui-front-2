@@ -1,5 +1,5 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router-dom";
-import { Article, ArticleListLoaderProps } from "../../@types/article";
+import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router-dom";
+import { ArticleListLoaderProps } from "../../@types/article";
 import { User } from "../../@types/user";
 import ArticlesList from "../../components/articles-list";
 import AuthorHeader from "../../components/author-header";
@@ -29,8 +29,17 @@ export default function AuthorPage() {
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<AuthorPageProps> {
   const { author_id } = params as { author_id: string };
-  const author: User = await retrieveUserByID(author_id!) as User;
-  const articles: Article[] = await retrieveArticlesByAuthorID(author_id!) as Article[];
+  const author = await retrieveUserByID(author_id);
+
+  if ('status' in author) {
+    return redirect('/auth/login') as unknown as AuthorPageProps;
+  }
+
+  const articles = await retrieveArticlesByAuthorID(author_id);
+
+  if ('status' in articles) {
+    return redirect('/auth/login') as unknown as AuthorPageProps;
+  }
 
   return { articles, author }
 }

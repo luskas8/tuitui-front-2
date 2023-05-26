@@ -1,9 +1,10 @@
 import { Article } from "../@types/article";
+import { APIError } from "../@types/global";
 import { retriveUserAuthToken } from "../utilities/localStorage";
 import { api } from "./api";
 import { upsertTags } from "./tags";
 
-export async function retrieveArticlesByAuthorID(authorID: string): Promise<Article[] | null> {
+export async function retrieveArticlesByAuthorID(authorID: string): Promise<Article[] | APIError> {
   const token = retriveUserAuthToken();
   const response = await api.get(`/articles`, {
     headers: {
@@ -12,16 +13,19 @@ export async function retrieveArticlesByAuthorID(authorID: string): Promise<Arti
     params: {
       authorId: authorID
     }
-  })
+  }).then(response => response).catch(error => error.response)
 
   if (response.status !== 200) {
-    return null;
+    return {
+      message: response.data.message,
+      status: response.status,
+    }
   }
 
   return response.data.data;
 }
 
-export async function retrieveArticleByID(articleID: string): Promise<Article | null> {
+export async function retrieveArticleByID(articleID: string): Promise<Article | APIError> {
   const token = retriveUserAuthToken();
   const response = await api.get(`/articles`, {
     headers: {
@@ -30,10 +34,13 @@ export async function retrieveArticleByID(articleID: string): Promise<Article | 
     params: {
       id: articleID
     }
-  })
+  }).then(response => response).catch(error => error.response)
 
   if (response.status !== 200) {
-    return null;
+    return {
+      message: response.data.message,
+      status: response.status,
+    };
   }
 
   return response.data.data[0];

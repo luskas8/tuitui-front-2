@@ -4,3 +4,5 @@ export type User = {
   userEmail: string
   description: string
 }
+
+export type APIUser = { user: User, token: string }
