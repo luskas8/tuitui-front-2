@@ -15,6 +15,7 @@ interface AuthenticationContextProps {
 export const AuthenticationContext = createContext<AuthenticationContextProps>({} as AuthenticationContextProps);
 
 export function AuthenticationProvider({ children }: BaseChildrenProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const { updateAlert } = useAlert();
   const [authenticated, setAuthenticated] = useState(false);
 
@@ -42,6 +43,8 @@ export function AuthenticationProvider({ children }: BaseChildrenProps) {
   }
 
   async function authCheck() {
+    setIsLoading(_ => true);
+
     const userId = retriveUserID() as string;
     const response = await retrieveUserByID(userId);
 
@@ -53,10 +56,11 @@ export function AuthenticationProvider({ children }: BaseChildrenProps) {
         message: response.message,
         type: "error"
       })
-
+      setIsLoading(_ => true);
       return;
     }
 
+    setIsLoading(_ => true);
     setAuthenticated(true);
     return;
   }
@@ -71,8 +75,12 @@ export function AuthenticationProvider({ children }: BaseChildrenProps) {
   }
 
   useEffect(() => {
-    authCheck()
+    authCheck().then(_ => setIsLoading(_ => false))
   }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthenticationContext.Provider value={{ authenticated, handleLogin, handleLogout, registerLogin }}>

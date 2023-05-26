@@ -42,8 +42,8 @@ export async function retrieveArticleByID(articleID: string): Promise<Article | 
       status: response.status,
     };
   }
-
-  return response.data.data[0];
+  const articles = response.data.data as Article[];
+  return articles[0];
 }
 
 interface SaveArticleInformationsResponse {

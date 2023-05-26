@@ -10,6 +10,7 @@ import { useModal } from "../../../hooks";
 import Layout from "../../../layouts/global";
 import { retrieveArticleByID } from "../../../services/articles";
 import { retriveUserID } from "../../../utilities/localStorage";
+import MDEditor from "@uiw/react-md-editor";
 
 interface ArticlePagePropsProps {
   article: Article;
@@ -53,12 +54,8 @@ export default function ArticlePage() {
               </ButtonGroup>
             )}
           </header>
-          <main className="text-justify">
-            <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since
-            </p>
+          <main className="text-justify" data-color-mode="light">
+            <MDEditor.Markdown className="" source={article.content} />
           </main>
           <footer className="flex flex-wrap gap-2 mt-2">
             {article.tags?.map((tag) => (

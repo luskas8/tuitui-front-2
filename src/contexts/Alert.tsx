@@ -38,7 +38,7 @@ export function AlertProvider({ children }: any) {
 
   return (
     <AlertContext.Provider value={{ alert, updateAlert, hideAlert }}>
-      <div className={`alert absolute top-7 right-2 ${alertVisibility ? "block" : "hidden"}`}>
+      <div className={`alert absolute z-50 top-7 right-2 ${alertVisibility ? "block" : "hidden"}`}>
         <div onClick={hideAlert} className={`alert-content cursor-pointer min-w-[240px] px-2 py-4 bg-white rounded drop-shadow-sm flex items-center ${alert.type || "error"}`}>
           <h1 className={`alert-message text-sm font-normal text-slate-500 ${alert.type || "default"}`}>{alert.message || "testeeeeeeeeeeee"}</h1>
         </div>

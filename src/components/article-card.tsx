@@ -1,6 +1,7 @@
 import { Article } from "../@types/article";
 import { ReactComponent as CaretRight } from "../assets/icons/CaretRight.svg";
 import { Link } from "./links";
+import MDEditor from "@uiw/react-md-editor";
 
 type ArticleCardProps = {
   article: Article;
@@ -24,8 +25,8 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         </div>
       </header>
       <main className="w-full min-h-10 max-h-48 sm:max-h-24 overflow-hidden text-ellipsis relative after:bg-gradient-to-t after:from-white after:absolute after:pointer-events-none after:w-full after:h-full after:top-0 after:left-0">
-        <div className=" h-full text-ellipsis text-justify">
-          {article?.content}
+        <div className=" h-full text-ellipsis text-justify" data-color-mode="light">
+          <MDEditor.Markdown className="" source={article.content} />
         </div>
       </main>
     </li>
