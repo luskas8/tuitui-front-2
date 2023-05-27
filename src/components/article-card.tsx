@@ -24,8 +24,9 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           </Link>
         </div>
       </header>
-      <main className="w-full min-h-10 max-h-48 sm:max-h-24 overflow-hidden text-ellipsis relative after:bg-gradient-to-t after:from-white after:absolute after:pointer-events-none after:w-full after:h-full after:top-0 after:left-0">
-        <div className=" h-full text-ellipsis text-justify" data-color-mode="light">
+      {/* relative after:bg-gradient-to-t after:from-white after:z-10 after:absolute after:pointer-events-none after:w-full after:h-full after:top-0 after:left-0 */}
+      <main className="w-full min-h-10 max-h-48 sm:max-h-24 overflow-hidden text-ellipsis">
+        <div className="h-full text-ellipsis text-justify" data-color-mode="light">
           <MDEditor.Markdown className="" source={article.content} />
         </div>
       </main>

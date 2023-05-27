@@ -48,6 +48,7 @@ export const FormProvider = ({ children }: FormProviderProps) => {
         return newErrors;
       });
     }
+
     const { name, value } = e.target;
     updateValue(name, value);
   }

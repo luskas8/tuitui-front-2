@@ -1,3 +1,4 @@
+import { ChildrenHelperProps } from "../@types/global";
 import useWindowSize from "../hooks/useWindowSize";
 import { Link as RRDLink, LinkProps as RRDLinkProps} from "react-router-dom";
 
@@ -19,11 +20,7 @@ interface LinkProps extends RRDLinkProps {
   iconRule?: (width: number) => boolean;
 }
 
-interface ChildrenHelperProps {
-  children: React.ReactNode;
-  useIconRule?: boolean;
-  iconRule?: (width: number) => boolean;
-}
+
 
 export function ButtonGroup({ orientation = LINK_GROUP_ORIENTATION.HORIZONTAL, children, className}: LinkGroupProps) {
   const windowSize = useWindowSize();

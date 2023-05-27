@@ -2,6 +2,7 @@ import { APIError } from "../@types/global";
 import { APIUser, User } from "../@types/user";
 import { retriveUserAuthToken } from "../utilities/localStorage";
 import { api } from "./api";
+import { apiErrorHandle } from "./errors";
 
 export async function retrieveUserByID(userID: string): Promise<User | APIError> {
   const token = retriveUserAuthToken();
@@ -12,7 +13,7 @@ export async function retrieveUserByID(userID: string): Promise<User | APIError>
     params: {
       userId: userID,
     }
-  }).then(response => response).catch(error => error.response);
+  }).then(response => response).catch(apiErrorHandle);
 
   if (response.status !== 200) {
     return { message: response.data.message, status: response.status } as APIError;
@@ -30,7 +31,7 @@ export async function saveUserInformations(userInformation: { username: string, 
     headers: {
       "Authorization": `Bearer ${token!}`,
     }
-  }).then(response => response).catch(error => error.response);
+  }).then(response => response).catch(apiErrorHandle);
 
   if (response.status !== 200) {
     return false;
@@ -40,7 +41,7 @@ export async function saveUserInformations(userInformation: { username: string, 
 }
 
 export async function loginUser(payload: { userEmail: string, password: string }): Promise<APIUser | APIError> {
-  const response = await api.post('/users/signin', payload).then(response => response).catch(error => error.response);
+  const response = await api.post('/users/signin', payload).then(response => response).catch(apiErrorHandle);
 
     if (response.status !== 200) {
       return {
@@ -60,7 +61,7 @@ export async function registerUser(values : { email: string, username: string, p
     description: "This is a description",
   };
 
-  const response = await api.post('/users/signup', payload).then(response => response).catch(error => error.response);
+  const response = await api.post('/users/signup', payload).then(response => response).catch(apiErrorHandle);
 
   if (response.status !== 201) {
     return {
@@ -70,4 +71,26 @@ export async function registerUser(values : { email: string, username: string, p
   }
 
   return { user: response.data.user as User, token: response.data.token as string };
+}
+
+export async function retrieveUsersByUsername(username: string): Promise<User[] | APIError> {
+  const token = retriveUserAuthToken();
+
+  const response = await api.get(`/users`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+    params: {
+      username: username,
+    },
+  }).then(response => response).catch(apiErrorHandle);
+
+  if (response.status !== 200) {
+    return {
+      message: response.data.message,
+      status: response.status,
+    } as APIError;
+  }
+
+  return response.data.users;
 }
