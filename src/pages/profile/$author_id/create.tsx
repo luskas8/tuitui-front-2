@@ -2,7 +2,7 @@ import MDEditor, { getCommands } from "@uiw/react-md-editor";
 import { useEffect, useRef, useState } from "react";
 import { redirect, useNavigate } from "react-router-dom";
 import rehypeSanitize from "rehype-sanitize";
-import { Article } from "../../../@types/article";
+import { Article, Tags } from "../../../@types/article";
 import { ReactComponent as ArrowLeft } from "../../../assets/icons/ArrowLeft.svg";
 import { ReactComponent as CheckCircle } from "../../../assets/icons/Check-Circle.svg";
 import { ReactComponent as Close } from "../../../assets/icons/Close.svg";
@@ -10,6 +10,7 @@ import { Button, ButtonGroup } from "../../../components/buttons";
 import { useAlert, useAuth } from "../../../hooks";
 import Layout from "../../../layouts/global";
 import { createArticle } from "../../../services/articles";
+import { retrieveUserByID } from "../../../services/user";
 
 
 export default function CreateArticlePage() {
@@ -20,7 +21,7 @@ export default function CreateArticlePage() {
     return redirect("/auth/login") as unknown as JSX.Element;
   }
 
-  const [articleInfo, setArticleInfo] = useState<Article>({} as Article);
+  const [articleInfo, setArticleInfo] = useState<Article>({ content: "", title: "", tags: [] as Tags[] } as Article);
   const [isSaving, setIsSaving] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -101,14 +102,40 @@ export default function CreateArticlePage() {
         type: "error",
         message: response.message,
       })
+      setIsSaving(false);
+      return;
     }
-    setIsSaving(false);
+
+    const author = await retrieveUserByID(response.author);
+
+    if ('status' in author) {
+      updateAlert({
+        type: "success",
+        message: "Artigo criado com sucesso",
+      })
+      setIsSaving(false);
+      navigate(`/homepage`);
+      return;
+    }
+
+    setArticleInfo(_ => ({
+      _id: response._id,
+      author: {
+        _id: author._id,
+        description: author.description,
+        userEmail: author.userEmail,
+        username: author.username,
+      },
+      content: response.content,
+      title: response.title,
+      tags: response.tags || [],
+    }));
 
     updateAlert({
       type: "success",
       message: "Artigo criado com sucesso",
     })
-    navigate(`/homepage`);
+    navigate(`/profile/${response.author}/articles/${response._id}`);
   }
 
   useEffect(() => {

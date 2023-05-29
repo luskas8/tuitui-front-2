@@ -139,7 +139,7 @@ function EditAuthorProfileModal({ author, updateAuthor }: EditAuthorProfileModal
                 disabled={isDeleting || isUpdating || isSubmitting}
               />
               <Input
-                label="Nome"
+                label="Bio"
                 id="description"
                 name="description"
                 placeholder="Bio"
