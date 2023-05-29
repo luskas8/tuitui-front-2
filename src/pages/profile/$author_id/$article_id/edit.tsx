@@ -29,11 +29,15 @@ export default function EditArticleLoading() {
     document.title = "Editar artigo | Tuitui";
   }, []);
 
-  return <Suspense fallback={<div className="w-full h-full flex flex-col items-center"><Squeleton /></div>}>
-    <Await resolve={article}>
-      {(article: Article | APIError) => <EditArticlePage article={article} />}
-    </Await>
-  </Suspense>;
+  return (
+    <Layout>
+        <Suspense fallback={<div className="w-full h-full flex flex-col items-center"><Squeleton /></div>}>
+          <Await resolve={article}>
+            {(article: Article | APIError) => <EditArticlePage article={article} />}
+          </Await>
+        </Suspense>
+    </Layout>
+  );
 }
 
 function EditArticlePage({ article }: EditArticlePageProps) {
@@ -65,7 +69,7 @@ function EditArticlePage({ article }: EditArticlePageProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  function tagInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  async function tagInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       const newTag = event.currentTarget.value;
       const newArticle = articleInfo;
@@ -78,11 +82,24 @@ function EditArticlePage({ article }: EditArticlePageProps) {
       }));
       event.currentTarget.value = "";
 
-      saveArticleInformations(newArticle);
+      const response = await saveArticleInformations(newArticle);
+
+      if ('status' in response) {
+        updateAlert({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+
+      updateAlert({
+        type: "success",
+        message: "Tag adicionada com sucesso",
+      });
     }
   }
 
-  const handleTagDelete = (tagName: string) => (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleTagDelete = (tagName: string) => async (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const newArticle = articleInfo;
 
     newArticle.tags = newArticle.tags?.filter((tag) => tag.tagName !== tagName);
@@ -92,7 +109,20 @@ function EditArticlePage({ article }: EditArticlePageProps) {
       ...newArticle,
     }));
 
-    saveArticleInformations(newArticle);
+    const response = await saveArticleInformations(newArticle);
+
+    if ('status' in response) {
+      updateAlert({
+        type: "error",
+        message: response.message,
+      });
+      return;
+    }
+
+    updateAlert({
+      type: "success",
+      message: "Tag removida com sucesso",
+    });
   }
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,13 +174,19 @@ function EditArticlePage({ article }: EditArticlePageProps) {
         type: "error",
         message: response.message,
       });
+      setIsSaving(false);
+      return;
     }
 
+    updateAlert({
+      type: "success",
+      message: "Artigo salvo com sucesso",
+    });
     setIsSaving(false);
   }
 
   return (
-    <Layout>
+    <>
       <div className="w-full h-full flex flex-col items-center">
         <div className="article-card w-full max-w-2xl min-w-[260px] rounded overflow-hidden shadow-lg px-6 py-4 bg-white">
           <nav className="flex items-center gap-2 py-1 mb-2 border-b-2 border-slate-100">
@@ -168,7 +204,7 @@ function EditArticlePage({ article }: EditArticlePageProps) {
                 <Close />
                 Cancelar
               </Button.Danger>
-              <Button.Success disabled={isSaving} onClick={handleSave}>
+              <Button.Success loading={isSaving} disabled={isSaving} onClick={handleSave}>
                 <CheckCircle />
                 Salvar
               </Button.Success>
@@ -209,7 +245,7 @@ function EditArticlePage({ article }: EditArticlePageProps) {
           </footer>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 

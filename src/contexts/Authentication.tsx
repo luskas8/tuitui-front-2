@@ -18,8 +18,9 @@ export const AuthenticationContext = createContext<AuthenticationContextProps>({
 
 export function AuthenticationProvider({ children }: BaseChildrenProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState<boolean>(!!retriveUserID());
+
   const { updateAlert } = useAlert();
-  const [authenticated, setAuthenticated] = useState(false);
 
   async function handleLogin(email: string, password: string) {
     const response = await loginUser({ userEmail: email, password });
@@ -47,12 +48,20 @@ export function AuthenticationProvider({ children }: BaseChildrenProps) {
   }
 
   async function authCheck() {
-    setIsLoading(_ => true);
+    // setIsLoading(_ => true);
 
     const userId = retriveUserID() as string;
+
+    if (!userId) {
+      setAuthenticated(false);
+      setIsLoading(_ => false);
+      return;
+    }
+
     const response = await retrieveUserByID(userId);
 
     if ('status' in response) {
+      setIsLoading(_ => false);
       setAuthenticated(false);
       clearUserAuthTokenV1();
       clearUserID();
@@ -60,11 +69,10 @@ export function AuthenticationProvider({ children }: BaseChildrenProps) {
         message: response.message,
         type: "error"
       })
-      setIsLoading(_ => true);
       return;
     }
 
-    setIsLoading(_ => true);
+    // setIsLoading(_ => false);
     setAuthenticated(true);
     return;
   }

@@ -1,6 +1,7 @@
 import { Article } from "../@types/article";
 import { APIError } from "../@types/global";
 import { retriveUserAuthToken } from "../utilities/localStorage";
+import { sleep } from "../utilities/sleep";
 import { api } from "./api";
 import { apiErrorHandle } from "./errors";
 import { upsertTags } from "./tags";
@@ -22,6 +23,8 @@ export async function retrieveArticlesByAuthorID(authorID: string): Promise<Arti
       status: response.status,
     }
   }
+
+  await sleep(5000)
 
   return response.data.data;
 }
@@ -50,6 +53,8 @@ export async function retrieveArticleByID(articleID: string): Promise<Article | 
       status: 404,
     };
   }
+
+  await sleep(5000);
 
   return articles[0];
 }

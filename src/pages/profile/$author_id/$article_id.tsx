@@ -1,5 +1,5 @@
 import MDEditor from "@uiw/react-md-editor";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Await, LoaderFunctionArgs, defer, redirect, useLoaderData, useNavigate } from "react-router-dom";
 import { Article } from "../../../@types/article";
 import { APIError } from "../../../@types/global";
@@ -31,18 +31,22 @@ export default function EditArticleLoading() {
     document.title = "Artigo | Tuitui";
   }, []);
 
-  return <Suspense fallback={<div className="w-full h-full flex flex-col items-center"><Squeleton /></div>}>
-    <Await
-      resolve={article}
-      errorElement={<div className="w-full h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold">Artigo não encontrado</h1>
-        <p className="text-slate-500">O artigo que você está tentando acessar não existe ou foi removido</p>
-        <Link.Default to="/homepage" className="text-sky-500 hover:underline">Voltar para a página inicial</Link.Default>
-      </div>}
-    >
-      {(article: Article | APIError) => <ArticlePage article={article} />}
-    </Await>
-  </Suspense>;
+  return (
+    <Layout>
+      <Suspense fallback={<div className="w-full h-full flex flex-col items-center"><Squeleton /></div>}>
+        <Await
+          resolve={article}
+          errorElement={<div className="w-full h-screen flex flex-col items-center justify-center">
+            <h1 className="text-2xl font-bold">Artigo não encontrado</h1>
+            <p className="text-slate-500">O artigo que você está tentando acessar não existe ou foi removido</p>
+            <Link.Default to="/homepage" className="text-sky-500 hover:underline">Voltar para a página inicial</Link.Default>
+          </div>}
+        >
+          {(article: Article | APIError) => <ArticlePage article={article} />}
+        </Await>
+      </Suspense>
+    </Layout>
+  );
 }
 
 export function ArticlePage({ article }: ArticlePageProps) {
@@ -56,7 +60,7 @@ export function ArticlePage({ article }: ArticlePageProps) {
   }
 
   return (
-    <Layout>
+    <>
       <DeleteConfirmationModal articleID={article._id} />
       <div className="w-full h-full flex flex-col items-center">
         <div className="article-card w-full max-w-2xl min-w-[260px] rounded overflow-hidden shadow-lg px-6 py-4 bg-white">
@@ -98,7 +102,7 @@ export function ArticlePage({ article }: ArticlePageProps) {
           </footer>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 
@@ -107,11 +111,14 @@ interface DeleteConfirmationModalProps {
 }
 
 function DeleteConfirmationModal({ articleID }: DeleteConfirmationModalProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const navigate = useNavigate();
   const { toggleVisibility } = useModal();
   const { updateAlert } = useAlert();
 
   async function handleDeleteArticle() {
+    setIsDeleting(_ => true);
     const response = await deleteArticleByID(articleID);
 
     if ('status' in response) {
@@ -119,9 +126,11 @@ function DeleteConfirmationModal({ articleID }: DeleteConfirmationModalProps) {
         type: 'error',
         message: response.message,
       })
+      setIsDeleting(_ => false);
       return;
     }
 
+    setIsDeleting(_ => false);
     updateAlert({
       type: 'success',
       message: 'Artigo excluído com sucesso!',
@@ -132,15 +141,15 @@ function DeleteConfirmationModal({ articleID }: DeleteConfirmationModalProps) {
 
   return (
     <Modal onClickBackdropismissModal={false}>
-      <Modal.Header>
+      <Modal.Header cancelButton={isDeleting}>
         <Modal.Title>Confirmar ação</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>Tem certeza que deseja excluir este artigo?</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button.Outline onClick={toggleVisibility}>Cancelar ação</Button.Outline>
-        <Button.Danger onClick={handleDeleteArticle}>Sim, excluir!</Button.Danger>
+        <Button.Outline disabled={isDeleting} onClick={toggleVisibility}>Cancelar ação</Button.Outline>
+        <Button.Danger loading={isDeleting} disabled={isDeleting} onClick={handleDeleteArticle}>Sim, excluir!</Button.Danger>
       </Modal.Footer>
     </Modal>
   );

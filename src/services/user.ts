@@ -1,6 +1,7 @@
 import { APIError } from "../@types/global";
 import { APIUser, User } from "../@types/user";
 import { retriveUserAuthToken } from "../utilities/localStorage";
+import { sleep } from "../utilities/sleep";
 import { api } from "./api";
 import { apiErrorHandle } from "./errors";
 
@@ -18,6 +19,8 @@ export async function retrieveUserByID(userID: string): Promise<User | APIError>
   if (response.status !== 200) {
     return { message: response.data.message, status: response.status } as APIError;
   }
+
+  await sleep(5000);
 
   return response.data.users[0] as User;
 }

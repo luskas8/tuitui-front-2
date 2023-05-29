@@ -134,7 +134,7 @@ export default function CreateArticlePage() {
                 <Close />
                 Cancelar
               </Button.Danger>
-              <Button.Success disabled={isSaving} onClick={handleSave}>
+              <Button.Success loading={isSaving} disabled={isSaving} onClick={handleSave}>
                 <CheckCircle />
                 Salvar
               </Button.Success>

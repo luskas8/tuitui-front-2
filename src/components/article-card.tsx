@@ -30,6 +30,13 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           <MDEditor.Markdown className="" source={article.content} />
         </div>
       </main>
+      <footer className="flex flex-wrap gap-2 mt-2">
+        {article.tags?.map((tag) => (
+          <Link.Default to={`/homepage?type=tag&search=${tag.tagName}`} key={tag.tagName} className="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-lg text-xs">
+            {tag.tagName}
+          </Link.Default>
+        ))}
+      </footer>
     </li>
   );
 }

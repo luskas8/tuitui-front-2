@@ -33,7 +33,7 @@ export default function AuthorPage() {
   return (
     <Layout>
       <header className="flex flex-col items-center max-w-2xl min-w-[260px] mx-auto">
-        <Suspense fallback={<Squeleton blocks={1} />}>
+        <Suspense fallback={<Squeleton blocks={1} removeTitle />}>
           <Await
             resolve={author}
             errorElement={
