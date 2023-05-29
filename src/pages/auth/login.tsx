@@ -39,6 +39,8 @@ export default function Login() {
     document.title = "Página de login | Tuitui";
   }, []);
 
+  console.log(isSubmitting)
+
   return (
     <div className="flex flex-col sm:flex-row">
       <main className="w-full lg:w-1/2 h-screen bg-white flex flex-col py-3">
@@ -64,7 +66,7 @@ export default function Login() {
                 <>
                   <Input
                     disabled={isSubmitting}
-                    label="Nome de usuário"
+                    label="Email"
                     name="email"
                     type="email"
                     value={values["email"]}
@@ -85,8 +87,8 @@ export default function Login() {
                   />
 
                   <ButtonGroup orientation={BUTTON_GROUP_ORIENTATION.VERTICAL}>
-                    <Button.Default loading={isSubmitting} disabled={isSubmitting} type="submit" className="w-full rounded-sm bg-violet-300 hover:bg-violet-400 text-white py-2">Entrar no TuiTui</Button.Default>
-                    <Link.Default aria-disabled={isSubmitting} className="w-full text-center rounded-sm border border-violet-300 hover:border-violet-400 text-violet-300 hover:text-violet-400 py-2"  to="/auth/register">Cadastrar nova contar</Link.Default>
+                    <Button loading={isSubmitting} disabled={isSubmitting} type="submit">Entrar no TuiTui</Button>
+                    <Link.Outline aria-disabled={isSubmitting} to="/auth/register">Criar nova contar</Link.Outline>
                   </ButtonGroup>
               </>
               )

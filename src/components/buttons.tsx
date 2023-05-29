@@ -28,12 +28,13 @@ export function ButtonGroup({ orientation = BUTTON_GROUP_ORIENTATION.HORIZONTAL,
   );
 }
 
-export function Button({ children, small, useIconRule = true, ...props }: ButtonProps) {
-  const windowSize = useWindowSize();
-
+export function Button({ children, small, useIconRule = true, iconRule, loading, ...props }: ButtonProps) {
   return (
-    <button {...props} className={`flex items-center gap-1 bg-violet-300 hover:bg-violet-400 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
-      {(useIconRule && windowSize.width <= 375 && children) ? children[0 as keyof typeof children] : children}
+    <button {...props} className={`flex justify-center items-center gap-1 bg-violet-300 hover:bg-violet-400 text-white font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+      {loading && <Loading className="animate-spin" />}
+      <ChildrenHelper iconRule={iconRule} useIconRule={useIconRule}>
+        {children}
+      </ChildrenHelper>
     </button>
   );
 }

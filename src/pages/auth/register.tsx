@@ -125,8 +125,8 @@ export default function Register() {
                     error={errors["confirm_password"]}
                   />
                   <ButtonGroup orientation={BUTTON_GROUP_ORIENTATION.VERTICAL}>
-                    <Button.Default disabled={isSubmitting} loading={isSubmitting} type="submit" className="w-full rounded-sm bg-violet-300 hover:bg-violet-400 text-white py-2">Criar conta</Button.Default>
-                    <Link.Default aria-disabled={isSubmitting} className="w-full text-center rounded-sm border border-violet-300 hover:border-violet-400 text-violet-300 hover:text-violet-400 py-2" to="/auth/login">Realizar login</Link.Default>
+                    <Button disabled={isSubmitting} loading={isSubmitting} type="submit">Criar conta</Button>
+                    <Link.Outline aria-disabled={isSubmitting} to="/auth/login">Realizar login</Link.Outline>
                   </ButtonGroup>
               </>
               )
