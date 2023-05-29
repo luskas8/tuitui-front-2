@@ -5,11 +5,12 @@ import { ReactComponent as Close} from '../assets/icons/Close.svg';
 
 interface BaseModalProps {
   children: React.ReactNode;
-  onClickFaceDismiss?: boolean;
+  onClickBackdropismissModal?: boolean;
 }
 
 interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  cancelButton?: boolean;
 }
 
 interface ModalTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
@@ -24,7 +25,7 @@ interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export default function Modal({ children, onClickFaceDismiss = true }: BaseModalProps) {
+export default function Modal({ children, onClickBackdropismissModal = true }: BaseModalProps) {
   const { isVisible, toggleVisibility } = useModal();
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Modal({ children, onClickFaceDismiss = true }: BaseModal
   }, [isVisible]);
 
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (onClickFaceDismiss && e.target === e.currentTarget) {
+    if (onClickBackdropismissModal && e.target === e.currentTarget) {
       toggleVisibility();
     }
   }
@@ -48,13 +49,13 @@ export default function Modal({ children, onClickFaceDismiss = true }: BaseModal
   );
 }
 
-Modal.Header = ({ children, ...props }: ModalHeaderProps) => {
+Modal.Header = ({ children, cancelButton = false, ...props }: ModalHeaderProps) => {
   const { toggleVisibility } = useModal();
 
   return (
     <header {...props} className="modal-header flex justify-between items-center border-b border-slate-100 pt-2 pb-1 px-4">
       {children}
-      <Button.Default onClick={toggleVisibility} className='bg-slate-300 hover:bg-slate-400 text-white p-2 rounded-full'>
+      <Button.Default disabled={cancelButton} onClick={toggleVisibility} className='bg-slate-300 hover:bg-slate-400 text-white p-2 rounded-full'>
         <Close />
       </Button.Default>
     </header>

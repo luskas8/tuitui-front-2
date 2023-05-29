@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Branding } from "../../assets/branding/branding.svg";
 import { ReactComponent as Tuitui } from "../../assets/branding/tuitui.svg";
@@ -6,8 +6,12 @@ import { BUTTON_GROUP_ORIENTATION, Button, ButtonGroup } from "../../components/
 import { Form } from "../../components/form";
 import { Input } from "../../components/inputs";
 import { Link } from "../../components/links";
+import { z } from "zod";
+import { useAuth, useForm } from "../../hooks";
 
 export default function Login() {
+  const { isSubmitting } = useForm();
+  const { handleLogin, authenticated } = useAuth();
   const navigate = useNavigate();
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -18,13 +22,24 @@ export default function Login() {
   }
 
   async function onSubmit(values: any) {
-    console.log(values);
-    login();
+    await handleLogin(values.email, values.password);
   }
 
-  function login() {
+  function logged() {
     navigate("/homepage")
   }
+
+  useEffect(() => {
+    if (authenticated) {
+      logged();
+    }
+  }, [authenticated])
+
+  useEffect(() => {
+    document.title = "Página de login | Tuitui";
+  }, []);
+
+  console.log(isSubmitting)
 
   return (
     <div className="flex flex-col sm:flex-row">
@@ -36,22 +51,35 @@ export default function Login() {
           <h1 className="text-slate-400 text-4xl md:text-5xl lg:text-6xl text-center tracking-wide md:tracking-wider lg:tracking-wide">conectando ideias</h1>
         </header>
         <main className="flex justify-center pt-10">
-          <Form onSubmit={onSubmit} ref={formRef} initialValues={initialValues} className="w-[300px] sm:w-2/3 flex flex-col gap-3 px-5 xs:px-7 md:px-16">
+          <Form
+            onSubmit={onSubmit}
+            ref={formRef}
+            schemeValidation={z.object({
+              email: z.string().min(1, "Campo obrigatório").email("Email inválido"),
+              password: z.string().min(1, "Campo obrigatíoio")
+            })}
+            initialValues={initialValues}
+            className="w-[300px] sm:w-2/3 flex flex-col gap-3 px-5 xs:px-7 md:px-16"
+          >
             {({ values, errors, handleOnChange }) => {
               return (
                 <>
                   <Input
-                    label="Nome de usuário"
-                    name="username"
-                    value={values["username"]}
+                    disabled={isSubmitting}
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={values["email"]}
                     handleOnChance={handleOnChange}
-                    placeholder="Digite seu nome de usuário"
-                    error={errors["username"]}
+                    placeholder="Digite seu email"
+                    error={errors["email"]}
                   />
 
                   <Input
+                    disabled={isSubmitting}
                     label="Senha"
                     name="password"
+                    type="password"
                     value={values["password"]}
                     handleOnChance={handleOnChange}
                     placeholder="Digite sua senha"
@@ -59,8 +87,8 @@ export default function Login() {
                   />
 
                   <ButtonGroup orientation={BUTTON_GROUP_ORIENTATION.VERTICAL}>
-                    <Button.Default type="submit" className="w-full rounded-sm bg-violet-300 hover:bg-violet-400 text-white py-2">Entrar no TuiTui</Button.Default>
-                    <Link.Default className="w-full text-center rounded-sm border border-violet-300 hover:border-violet-400 text-violet-300 hover:text-violet-400 py-2"  to="/auth/register">Cadastrar nova contar</Link.Default>
+                    <Button loading={isSubmitting} disabled={isSubmitting} type="submit">Entrar no TuiTui</Button>
+                    <Link.Outline aria-disabled={isSubmitting} to="/auth/register">Criar nova contar</Link.Outline>
                   </ButtonGroup>
               </>
               )

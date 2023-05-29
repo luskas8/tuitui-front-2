@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { BaseChildrenProps } from "../@types/global";
 
 interface ModalContext {
   isVisible: boolean;
@@ -7,9 +8,7 @@ interface ModalContext {
 
 export const ModalContext = createContext({} as ModalContext);
 
-interface ModalProviderProps {
-  children: React.ReactNode;
-}
+interface ModalProviderProps extends BaseChildrenProps {}
 
 
 export default function ModalProvider({ children }: ModalProviderProps) {

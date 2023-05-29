@@ -1,11 +1,14 @@
-import { redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../hooks";
+import { retriveUserID } from "../../utilities/localStorage";
 
 export default function ProfileIndex() {
-  return null
-}
+  const { authenticated } = useAuth();
 
-// TODO: Replace AUTHOR_ID with the author's ID
+  if (!authenticated) {
+    return <Navigate to="/auth/login" />
+  }
 
-export async function loader() {
-  return redirect("/profile/AUTHOR_ID");
+  const userID = retriveUserID();
+  return <Navigate to={`/profile/${userID}`} />
 }
