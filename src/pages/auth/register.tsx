@@ -7,10 +7,11 @@ import { BUTTON_GROUP_ORIENTATION, Button, ButtonGroup } from "../../components/
 import { Form } from "../../components/form";
 import { Input } from "../../components/inputs";
 import { Link } from "../../components/links";
-import { useAlert, useAuth } from "../../hooks";
+import { useAlert, useAuth, useForm } from "../../hooks";
 import { registerUser } from "../../services/user";
 
 export default function Register() {
+  const { isSubmitting } = useForm();
   const { updateAlert } = useAlert();
   const { registerLogin, authenticated } = useAuth();
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ export default function Register() {
               return (
                 <>
                   <Input
+                    disabled={isSubmitting}
                     label="Nome de usuário"
                     name="username"
                     value={values["username"]}
@@ -92,6 +94,7 @@ export default function Register() {
                   />
 
                   <Input
+                    disabled={isSubmitting}
                     label="Email"
                     name="email"
                     value={values["email"]}
@@ -101,6 +104,7 @@ export default function Register() {
                   />
 
                   <Input
+                    disabled={isSubmitting}
                     label="Senha"
                     name="password"
                     type="password"
@@ -111,6 +115,7 @@ export default function Register() {
                   />
 
                   <Input
+                    disabled={isSubmitting}
                     label="Confirmar nova senha"
                     name="confirm_password"
                     type="password"
@@ -120,8 +125,8 @@ export default function Register() {
                     error={errors["confirm_password"]}
                   />
                   <ButtonGroup orientation={BUTTON_GROUP_ORIENTATION.VERTICAL}>
-                    <Button.Default type="submit" className="w-full rounded-sm bg-violet-300 hover:bg-violet-400 text-white py-2">Criar conta</Button.Default>
-                    <Link.Default className="w-full text-center rounded-sm border border-violet-300 hover:border-violet-400 text-violet-300 hover:text-violet-400 py-2" to="/auth/login">Realizar login</Link.Default>
+                    <Button.Default disabled={isSubmitting} loading={isSubmitting} type="submit" className="w-full rounded-sm bg-violet-300 hover:bg-violet-400 text-white py-2">Criar conta</Button.Default>
+                    <Link.Default aria-disabled={isSubmitting} className="w-full text-center rounded-sm border border-violet-300 hover:border-violet-400 text-violet-300 hover:text-violet-400 py-2" to="/auth/login">Realizar login</Link.Default>
                   </ButtonGroup>
               </>
               )
