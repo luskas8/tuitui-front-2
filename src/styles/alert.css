@@ -9,3 +9,11 @@
 .alert-content.error > .alert-message {
   @apply text-black;
 }
+
+.alert-content.success {
+  @apply border-l-emerald-700 bg-emerald-300 text-black;
+}
+
+.alert-content.success > .alert-message {
+  @apply text-black;
+}

@@ -35,6 +35,10 @@ export default function Login() {
     }
   }, [authenticated])
 
+  useEffect(() => {
+    document.title = "Página de login | Tuitui";
+  }, []);
+
   return (
     <div className="flex flex-col sm:flex-row">
       <main className="w-full lg:w-1/2 h-screen bg-white flex flex-col py-3">

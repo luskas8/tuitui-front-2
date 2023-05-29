@@ -44,42 +44,81 @@ export async function retrieveArticleByID(articleID: string): Promise<Article | 
     };
   }
   const articles = response.data.data as Article[];
+  if (articles.length === 0) {
+    return {
+      message: "Article not found",
+      status: 404,
+    };
+  }
+
   return articles[0];
 }
 
-interface SaveArticleInformationsResponse {
-  updatedArticle: {
-		author: string,
-		title: string,
-		content: string,
-		tags: [{ tagName: string }],
-		_id: string
-  }
+interface ArticleAPIResponse {
+  author: string,
+  title: string,
+  content: string,
+  tags: [{ tagName: string }],
+  _id: string
 }
 
-export async function saveArticleInformations(article: Article) {
+export async function saveArticleInformations(article: Article): Promise<any | APIError> {
   const token = retriveUserAuthToken();
 
   const response = await api.put(`/articles`, {
     articleId: article._id,
     title: article.title,
     content: article.content,
-    tags: article.tags,
+    tags: article.tags || [],
   }, {
     headers: {
       "Authorization": `Bearer ${token}`,
     },
-  })
+  }).then(response => response).catch(apiErrorHandle);
 
   if (response.status !== 200) {
-    return null;
+    return {
+      message: response.data.message,
+      status: response.status,
+    };
   }
 
-  const responseData = response.data as SaveArticleInformationsResponse;
+  const responseData = response.data as { updatedArticle: ArticleAPIResponse };
 
-  await upsertTags(responseData.updatedArticle.tags.map(tag => tag.tagName));
+  if (responseData.updatedArticle.tags.length > 0) {
+    await upsertTags(responseData.updatedArticle.tags.map(tag => tag.tagName));
+  }
 
   return responseData.updatedArticle;
+}
+
+export async function createArticle(article: Article): Promise<ArticleAPIResponse | APIError> {
+  const token = retriveUserAuthToken();
+
+  const response = await api.post(`/articles`, {
+    title: article.title,
+    content: article.content,
+    tags: article.tags || [],
+  }, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  }).then(response => response).catch(apiErrorHandle);
+
+  if (response.status !== 201) {
+    return {
+      message: response.data.message,
+      status: response.status,
+    };
+  }
+
+  const responseData = response.data as { article: ArticleAPIResponse };
+
+  if (responseData.article.tags.length > 0) {
+    await upsertTags(responseData.article.tags.map(tag => tag.tagName));
+  }
+
+  return responseData.article;
 }
 
 export async function retrieveArticlesByAuthorName(author: string): Promise<Article[] | APIError> {
@@ -123,4 +162,26 @@ export async function retrieveArticlesByTagName(tag: string): Promise<Article[] 
   }
 
   return response.data.data;
+}
+
+export async function deleteArticleByID(articleID: string) {
+  const token = retriveUserAuthToken();
+
+  const response = await api.delete(`/articles`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+    params: {
+      articleId: articleID,
+    }
+  }).then(response => response).catch(apiErrorHandle);
+
+  if (response.status !== 200) {
+    return {
+      message: response.data.message,
+      status: response.status,
+    };
+  }
+
+  return response.data;
 }

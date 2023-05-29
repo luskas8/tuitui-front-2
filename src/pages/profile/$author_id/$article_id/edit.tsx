@@ -1,36 +1,65 @@
 import MDEditor, { getCommands } from "@uiw/react-md-editor";
-import { useRef, useState } from "react";
-import { LoaderFunctionArgs, redirect, useLoaderData, useNavigate } from "react-router-dom";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Await, LoaderFunctionArgs, defer, redirect, useLoaderData, useNavigate } from "react-router-dom";
 import rehypeSanitize from "rehype-sanitize";
 import { Article } from "../../../../@types/article";
+import { APIError } from "../../../../@types/global";
 import { ReactComponent as ArrowLeft } from "../../../../assets/icons/ArrowLeft.svg";
 import { ReactComponent as CheckCircle } from "../../../../assets/icons/Check-Circle.svg";
 import { ReactComponent as Close } from "../../../../assets/icons/Close.svg";
+import Squeleton from "../../../../components/Squeleton";
 import { Button, ButtonGroup } from "../../../../components/buttons";
 import { useAlert, useAuth } from "../../../../hooks";
 import Layout from "../../../../layouts/global";
 import { retrieveArticleByID, saveArticleInformations } from "../../../../services/articles";
 import { retriveUserID } from "../../../../utilities/localStorage";
 
-interface ArticlePagePropsProps {
-  article: Article;
+interface EditArticleLoadingProps {
+  article: Promise<typeof retrieveArticleByID>;
 }
 
-export default function EditArticlePage() {
+interface EditArticlePageProps {
+  article: Article | APIError;
+}
+
+export default function EditArticleLoading() {
+  const { article } = useLoaderData() as EditArticleLoadingProps;
+
+  useEffect(() => {
+    document.title = "Editar artigo | Tuitui";
+  }, []);
+
+  return <Suspense fallback={<div className="w-full h-full flex flex-col items-center"><Squeleton /></div>}>
+    <Await resolve={article}>
+      {(article: Article | APIError) => <EditArticlePage article={article} />}
+    </Await>
+  </Suspense>;
+}
+
+function EditArticlePage({ article }: EditArticlePageProps) {
   const { updateAlert } = useAlert();
   const { authenticated } = useAuth();
+  const loggedUserID = retriveUserID();
 
   if (!authenticated) {
-    return redirect("/auth/login");
+    return redirect("/auth/login") as unknown as JSX.Element;
   }
 
-  const { article } = useLoaderData() as ArticlePagePropsProps;
-
-  if (!article) {
-    return null;
+  if ('status' in article) {
+    return <div className="w-full">
+      <Squeleton />
+    </div>;
   }
 
-  const [articleInfo, setArticleInfo] = useState<Article>(article);
+  if (loggedUserID !== article.author._id) {
+    updateAlert({
+      type: "error",
+      message: "Você não tem permissão para editar este artigo",
+    });
+    return redirect("/homepage") as unknown as JSX.Element;
+  }
+
+  const [articleInfo, setArticleInfo] = useState<Article>(article as Article);
   const [isSaving, setIsSaving] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -96,7 +125,7 @@ export default function EditArticlePage() {
     }));
   }
 
-  function handleSave() {
+  async function handleSave() {
     setIsSaving(true);
     if (!articleInfo.title || !articleInfo.content) {
       updateAlert({
@@ -107,7 +136,16 @@ export default function EditArticlePage() {
       setIsSaving(false);
       return;
     }
-    console.log(articleInfo);
+
+    const response = await saveArticleInformations(articleInfo);
+
+    if ('status' in response) {
+      updateAlert({
+        type: "error",
+        message: response.message,
+      });
+    }
+
     setIsSaving(false);
   }
 
@@ -175,18 +213,8 @@ export default function EditArticlePage() {
   );
 }
 
-export async function loader({ params }: LoaderFunctionArgs): Promise<ArticlePagePropsProps> {
-  const loggedUserID = retriveUserID();
+export async function loader({ params }: LoaderFunctionArgs): Promise<unknown> {
   const { article_id } = params as { article_id: string };
-  const article = await retrieveArticleByID(article_id);
-
-  if ('status' in article) {
-    return redirect("/auth/login") as unknown as ArticlePagePropsProps;
-  }
-
-  if (loggedUserID !== article.author._id) {
-    return redirect("/homepage") as unknown as ArticlePagePropsProps;
-  }
-
-  return { article };
+  const article = retrieveArticleByID(article_id);
+  return defer({ article });
 }

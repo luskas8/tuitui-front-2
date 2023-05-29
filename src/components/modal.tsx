@@ -5,7 +5,7 @@ import { ReactComponent as Close} from '../assets/icons/Close.svg';
 
 interface BaseModalProps {
   children: React.ReactNode;
-  onClickFaceDismiss?: boolean;
+  onClickBackdropismissModal?: boolean;
 }
 
 interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -25,7 +25,7 @@ interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export default function Modal({ children, onClickFaceDismiss = true }: BaseModalProps) {
+export default function Modal({ children, onClickBackdropismissModal = true }: BaseModalProps) {
   const { isVisible, toggleVisibility } = useModal();
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function Modal({ children, onClickFaceDismiss = true }: BaseModal
   }, [isVisible]);
 
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (onClickFaceDismiss && e.target === e.currentTarget) {
+    if (onClickBackdropismissModal && e.target === e.currentTarget) {
       toggleVisibility();
     }
   }

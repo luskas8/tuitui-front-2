@@ -7,6 +7,7 @@ import { ReactComponent as Tuitui } from "../assets/branding/branding.svg";
 import { ReactComponent as File } from "../assets/icons/FileText.svg";
 import { ReactComponent as Loading } from "../assets/icons/Loading.svg";
 import { ReactComponent as Search } from "../assets/icons/Search.svg";
+import { ReactComponent as Logout } from "../assets/icons/Logout.svg";
 import { ReactComponent as Up } from "../assets/icons/Up.svg";
 import { ReactComponent as User } from "../assets/icons/User.svg";
 import { retriveTags } from "../services/tags";
@@ -15,6 +16,7 @@ import { retriveUserID } from "../utilities/localStorage";
 import { Button } from "./buttons";
 import { ChildrenProps, Form } from "./form";
 import { ButtonGroup, LINK_GROUP_ORIENTATION, Link } from "./links";
+import { useAuth } from "../hooks";
 
 export default function Navigation() {
   const HREF = window.location.href
@@ -28,6 +30,7 @@ export default function Navigation() {
   const search = searchParams.get("search");
 
   const navigate = useNavigate();
+  const { handleLogout } = useAuth();
 
   function iconRule(width: number) {
     return (width >= 425 && width <= 550) || (width >= 640 && width <= 747);
@@ -37,6 +40,11 @@ export default function Navigation() {
     navigate(`/homepage?type=${values.type}&search=${values.search}`);
   }
 
+  function logout() {
+    handleLogout();
+    navigate("/auth/login");
+  }
+
   return (
     <nav className="w-full h-full sm:h-14 bg-white drop-shadow-sm flex flex-col xs:flex-row items-center justify-between gap-1">
       <div className="p-1 w-20 h-20 md:h-full">
@@ -44,30 +52,35 @@ export default function Navigation() {
           <Tuitui className="w-full h-full"/>
         </Link.Default>
       </div>
-      <Form
-        onSubmit={submit}
-        initialValues={{ type: type || "tag", search: search || "" }}
-        schemeValidation={z.object({
-          type: z.string({ required_error: "Campo obrigatório" }).min(1, "Campo obrigatório"),
-          search: z.string({ required_error: "Campo obrigatório" }).min(1, "Escolha uma pesquisa")
-        }).required()}
-        >
-        {SearchGroup}
-      </Form>
+      {!inProfilePageRegex.test(pathname) && (
+        <Form
+          onSubmit={submit}
+          initialValues={{ type: type || "tag", search: search || "" }}
+          schemeValidation={z.object({
+            type: z.string({ required_error: "Campo obrigatório" }).min(1, "Campo obrigatório"),
+            search: z.string({ required_error: "Campo obrigatório" }).min(1, "Escolha uma pesquisa")
+          }).required()}
+          >
+          {SearchGroup}
+        </Form>
+      )}
       <div className="actions sm:pr-1">
         <ButtonGroup orientation={LINK_GROUP_ORIENTATION.VERTICAL}>
-          {!inCreatePageRegex.test(pathname) && (
+          {!(inCreatePageRegex.test(pathname) || inProfilePageRegex.test(pathname)) && (
             <Link iconRule={iconRule} to={`/profile/${loggedUser}/create`}>
               <File />
               Novo artigo
             </Link>
           )}
           {!inProfilePageRegex.test(pathname) && (
-            <Link.Terciary iconRule={iconRule} to={`/profile/${loggedUser}`}>
+            <Link.Terciary className="peer" iconRule={iconRule} to={`/profile/${loggedUser}`}>
               <User />
               Minha conta
             </Link.Terciary>
           )}
+          <Button.Default onClick={logout} className="px-1 text-stone-400 hover:text-slate-300">
+            <Logout />
+          </Button.Default>
         </ButtonGroup>
       </div>
     </nav>

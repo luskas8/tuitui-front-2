@@ -1,31 +1,63 @@
-import { LoaderFunctionArgs, redirect, useLoaderData, useNavigate } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
+import { Suspense, useEffect } from "react";
+import { Await, LoaderFunctionArgs, defer, redirect, useLoaderData, useNavigate } from "react-router-dom";
 import { Article } from "../../../@types/article";
+import { APIError } from "../../../@types/global";
 import { ReactComponent as ArrowLeft } from "../../../assets/icons/ArrowLeft.svg";
 import { ReactComponent as DeleteOutlined } from "../../../assets/icons/DeleteOutlined.svg";
 import { ReactComponent as Edit } from "../../../assets/icons/Edit.svg";
+import Squeleton from "../../../components/Squeleton";
 import { Button, ButtonGroup } from "../../../components/buttons";
 import { Link } from "../../../components/links";
 import Modal from "../../../components/modal";
-import { useModal } from "../../../hooks";
+import { useAlert, useModal } from "../../../hooks";
 import Layout from "../../../layouts/global";
-import { retrieveArticleByID } from "../../../services/articles";
+import { deleteArticleByID, retrieveArticleByID } from "../../../services/articles";
 import { retriveUserID } from "../../../utilities/localStorage";
-import MDEditor from "@uiw/react-md-editor";
 
-interface ArticlePagePropsProps {
-  article: Article;
+interface ArticleLoadingProps {
+  article: Promise<typeof retrieveArticleByID>;
 }
 
-export default function ArticlePage() {
+interface ArticlePageProps {
+  article: Article | APIError;
+}
+
+
+export default function EditArticleLoading() {
+  const { article } = useLoaderData() as ArticleLoadingProps;
+
+  useEffect(() => {
+    document.title = "Artigo | Tuitui";
+  }, []);
+
+  return <Suspense fallback={<div className="w-full h-full flex flex-col items-center"><Squeleton /></div>}>
+    <Await
+      resolve={article}
+      errorElement={<div className="w-full h-screen flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold">Artigo não encontrado</h1>
+        <p className="text-slate-500">O artigo que você está tentando acessar não existe ou foi removido</p>
+        <Link.Default to="/homepage" className="text-sky-500 hover:underline">Voltar para a página inicial</Link.Default>
+      </div>}
+    >
+      {(article: Article | APIError) => <ArticlePage article={article} />}
+    </Await>
+  </Suspense>;
+}
+
+export function ArticlePage({ article }: ArticlePageProps) {
   const loggedUserID = retriveUserID();
-  const { article } = useLoaderData() as ArticlePagePropsProps;
 
   const { toggleVisibility } = useModal();
   const navigate = useNavigate();
 
+  if ('status' in article) {
+    return redirect('/auth/login') as unknown as JSX.Element;
+  }
+
   return (
     <Layout>
-      <DeleteConfirmationModal />
+      <DeleteConfirmationModal articleID={article._id} />
       <div className="w-full h-full flex flex-col items-center">
         <div className="article-card w-full max-w-2xl min-w-[260px] rounded overflow-hidden shadow-lg px-6 py-4 bg-white">
           <nav className="flex items-center gap-2 py-1 mb-2 border-b-2 border-slate-100">
@@ -70,11 +102,36 @@ export default function ArticlePage() {
   );
 }
 
-function DeleteConfirmationModal() {
+interface DeleteConfirmationModalProps {
+  articleID: string;
+}
+
+function DeleteConfirmationModal({ articleID }: DeleteConfirmationModalProps) {
+  const navigate = useNavigate();
   const { toggleVisibility } = useModal();
+  const { updateAlert } = useAlert();
+
+  async function handleDeleteArticle() {
+    const response = await deleteArticleByID(articleID);
+
+    if ('status' in response) {
+      updateAlert({
+        type: 'error',
+        message: response.message,
+      })
+      return;
+    }
+
+    updateAlert({
+      type: 'success',
+      message: 'Artigo excluído com sucesso!',
+    })
+    toggleVisibility();
+    navigate(-1)
+  }
 
   return (
-    <Modal onClickFaceDismiss={false}>
+    <Modal onClickBackdropismissModal={false}>
       <Modal.Header>
         <Modal.Title>Confirmar ação</Modal.Title>
       </Modal.Header>
@@ -83,19 +140,15 @@ function DeleteConfirmationModal() {
       </Modal.Body>
       <Modal.Footer>
         <Button.Outline onClick={toggleVisibility}>Cancelar ação</Button.Outline>
-        <Button.Danger>Sim, excluir!</Button.Danger>
+        <Button.Danger onClick={handleDeleteArticle}>Sim, excluir!</Button.Danger>
       </Modal.Footer>
     </Modal>
   );
 }
 
-export async function loader({ params }: LoaderFunctionArgs): Promise<ArticlePagePropsProps> {
+export async function loader({ params }: LoaderFunctionArgs): Promise<unknown> {
   const { article_id } = params as { article_id: string };
-  const article = await retrieveArticleByID(article_id);
+  const article = retrieveArticleByID(article_id);
 
-  if ('status' in article) {
-    return redirect('/auth/login') as unknown as ArticlePagePropsProps;
-  }
-
-  return { article };
+  return defer({ article });
 }

@@ -4,8 +4,7 @@ import { retriveUserAuthToken } from "../utilities/localStorage";
 import { api } from "./api";
 import { apiErrorHandle } from "./errors";
 
-export async function upsertTags(tags: string[]): Promise<string[]> {
-  console.log("upsertTags", tags)
+export async function upsertTags(tags: string[]): Promise<string[] | APIError> {
   const token = retriveUserAuthToken();
 
   const response = await api.post(`/tags`, {
@@ -14,12 +13,13 @@ export async function upsertTags(tags: string[]): Promise<string[]> {
     headers: {
       "Authorization": `Bearer ${token!}`,
     }
-  })
-
-  console.log("upsertTags done", response)
+  }).then(response => response).catch(apiErrorHandle);
 
   if (response.status !== 201) {
-    return [];
+    return {
+      message: response.data.message,
+      status: response.status,
+    };
   }
 
   return response.data.tags;

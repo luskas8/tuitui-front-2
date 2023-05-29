@@ -3,14 +3,15 @@ import { ReactComponent as ArrowLeft } from "../assets/icons/ArrowLeft.svg";
 import { BUTTON_GROUP_ORIENTATION, Button, ButtonGroup } from "./buttons";
 // import { ReactComponent as Plus } from "../assets/icons/Plus.svg";
 import { ReactComponent as Edit } from "../assets/icons/Edit.svg";
-import { useForm, useModal } from "../hooks";
+import { ReactComponent as ExclamationCircle } from "../assets/icons/Exclamation-Circle.svg";
+import { useAlert, useAuth, useForm, useModal } from "../hooks";
 import Modal from "./modal";
 import { User } from "../@types/user";
 import React, { useRef, useState } from "react";
 import { retriveUserID } from "../utilities/localStorage";
 import { Input } from "./inputs";
 import { Form } from "./form";
-import { saveUserInformations } from "../services/user";
+import { deleteUserAccount, saveUserInformations } from "../services/user";
 
 
 interface AuthorHeaderProps {
@@ -40,7 +41,7 @@ export default function AuthorHeader({ author }: AuthorHeaderProps) {
       <header className="flex justify-between">
         <section>
           <h1 className="font-bold text-2xl">{authorInfo.username}</h1>
-          <h2 className="mt-1 font-light text-slate-500">{authorInfo.username}</h2>
+          {/* <h2 className="mt-1 font-light text-slate-500">{authorInfo.username}</h2> */}
         </section>
         {loggedUserID === authorInfo._id && (
           <ButtonGroup orientation={BUTTON_GROUP_ORIENTATION.VERTICAL}>
@@ -61,14 +62,40 @@ export default function AuthorHeader({ author }: AuthorHeaderProps) {
 }
 
 function EditAuthorProfileModal({ author, updateAuthor }: EditAuthorProfileModalProps) {
+  const { handleLogout } = useAuth();
+  const { toggleVisibility } = useModal();
+  const { updateAlert } = useAlert();
   const { isSubmitting } = useForm();
+
+  const navigate = useNavigate();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const [isDeleting, updateIsDeleting] = useState(false);
   const [isUpdating, updateIsUpdating] = useState(false);
+  const [deleteConfirmationState, updateDeleteConfirmationState] = useState(false);
 
-  function handleDeleteAccount() {
+  async function handleDeleteAccount() {
     updateIsDeleting(true)
+
+    const response = await deleteUserAccount();
+
+    if (typeof response === "object") {
+      updateAlert({
+        message: response.message,
+        type: "error",
+      });
+      updateIsDeleting(false);
+      return;
+    }
+
+    updateAlert({
+      message: "Conta excluída com sucesso!",
+      type: "success",
+    });
+    toggleVisibility();
+    updateIsDeleting(false);
+    handleLogout();
+    navigate("/auth/login");
   }
 
   const handleUpdateAccount = async (values: any) => {
@@ -79,12 +106,17 @@ function EditAuthorProfileModal({ author, updateAuthor }: EditAuthorProfileModal
     // TODO: show response alert message
     if (response) {
       updateAuthor(author => ({ ...author, ...values }));
+      updateAlert({
+        message: "Informações atualizadas com sucesso!",
+        type: "success",
+      });
+      toggleVisibility();
     }
     updateIsUpdating(false);
   }
 
   return (
-    <Modal onClickFaceDismiss={isDeleting || isUpdating || isSubmitting}>
+    <Modal onClickBackdropismissModal={!(isDeleting || isUpdating || isSubmitting)}>
       <Modal.Header cancelButton={isDeleting || isUpdating || isSubmitting}>
         <Modal.Title>Editar perfil</Modal.Title>
       </Modal.Header>
@@ -121,7 +153,14 @@ function EditAuthorProfileModal({ author, updateAuthor }: EditAuthorProfileModal
                 <ButtonGroup className="mt-4" orientation={BUTTON_GROUP_ORIENTATION.VERTICAL}>
                   {/* <Button.Outline small>Alterar senha</Button.Outline>
                   <Button.Outline small>Baixar dados</Button.Outline> */}
-                  <Button.Danger loading={isDeleting} disabled={isDeleting || isUpdating || isSubmitting} small onClick={handleDeleteAccount}>Excluir conta</Button.Danger>
+                  {!deleteConfirmationState && <Button.Danger loading={isDeleting} disabled={isDeleting || isUpdating || isSubmitting} type="button" small onClick={() => updateDeleteConfirmationState(true)}>Excluir conta</Button.Danger>}
+                  {deleteConfirmationState && <>
+                    <p className="text-sm flex gap-1 items-center"><span className="fill-red-400"><ExclamationCircle className="w-5 h-5" /></span>Tem certeza que quer continuar com a exlusão da conta?</p>
+                    <div className="flex gap-3 mt-2">
+                      <Button.Outline type="button" small onClick={() => updateDeleteConfirmationState(false)}>Não</Button.Outline>
+                      <Button.Danger type="button" small onClick={handleDeleteAccount}>Sim!</Button.Danger>
+                    </div>
+                  </>}
                 </ButtonGroup>
                 <button ref={buttonRef} type="submit" className="hidden" />
               </div>

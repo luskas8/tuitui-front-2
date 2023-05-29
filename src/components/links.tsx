@@ -77,9 +77,9 @@ Link.Outline = ({ children, small, useIconRule = true, iconRule, ...props }: Lin
   );
 }
 
-Link.Terciary = ({ children, small, useIconRule = true, iconRule, ...props }: LinkProps) => {
+Link.Terciary = ({ children, small, useIconRule = true, iconRule, className, ...props }: LinkProps) => {
   return (
-    <RRDLink {...props} className={`flex justify-center gap-1 bg-transparent text-violet-400 hover:text-violet-600 font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} rounded`}>
+    <RRDLink {...props} className={`flex justify-center gap-1 bg-transparent text-violet-400 hover:text-violet-600 font-bold ${small ? "py-[2px] px-4" : "py-2 px-4"} ${className && className} rounded`}>
       <ChildrenHelper iconRule={iconRule} useIconRule={useIconRule}>
         {children}
       </ChildrenHelper>

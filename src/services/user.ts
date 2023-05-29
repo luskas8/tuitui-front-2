@@ -94,3 +94,22 @@ export async function retrieveUsersByUsername(username: string): Promise<User[] 
 
   return response.data.users;
 }
+
+export async function deleteUserAccount(): Promise<boolean | APIError> {
+  const token = retriveUserAuthToken();
+
+  const response = await api.delete(`/users`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  }).then(response => response).catch(apiErrorHandle);
+
+  if (response.status !== 200) {
+    return {
+      message: response.data.message,
+      status: response.status,
+    };
+  }
+
+  return true;
+}

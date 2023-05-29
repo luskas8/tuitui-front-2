@@ -32,9 +32,6 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(({ children, initialV
 
       if (!result?.success) {
         const errors = result?.error.issues
-
-        console.log(errors)
-
         errors?.map((error: any) => updateErrors(error.path[0], error.message))
         updateSubmitting(false);
         return;

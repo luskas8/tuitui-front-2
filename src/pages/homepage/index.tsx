@@ -1,14 +1,22 @@
-import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router-dom";
-import { Article, ArticleListLoaderProps } from "../../@types/article";
+import { Await, LoaderFunctionArgs, defer, redirect, useLoaderData } from "react-router-dom";
+import { Article } from "../../@types/article";
 import ArticlesList from "../../components/articles-list";
 import Layout from "../../layouts/global";
 import { useAuth } from "../../hooks";
 import { retrieveArticlesByAuthorID, retrieveArticlesByAuthorName, retrieveArticlesByTagName } from "../../services/articles";
 import { retriveUserID } from "../../utilities/localStorage";
 import { APIError } from "../../@types/global";
+import { Suspense, useEffect } from "react";
+import Squeleton from "../../components/Squeleton";
 
-interface HomepageLoaderProps extends ArticleListLoaderProps {
+interface HomepageLoaderProps {
   title: string;
+  articles: Promise<Article[] | APIError>;
+}
+
+interface ArticlesListLoadingProps {
+  title: string;
+  articles: Article[] | APIError;
 }
 
 export default function Homepage() {
@@ -19,16 +27,32 @@ export default function Homepage() {
     redirect("/auth/login")
   }
 
+  useEffect(() => {
+    document.title = "Página inicial | Tuitui";
+  }, []);
+
   return (
     <Layout>
       <main className="flex mx-auto w-full max-w-2xl min-w-[260px]">
-        <ArticlesList title={title} articles={articles} />
+        <Suspense fallback={<Squeleton />}>
+            <Await resolve={articles}>
+              {(articles: Article[] | APIError) => <ArticlesListLoading articles={articles} title={title} />}
+            </Await>
+        </Suspense>
       </main>
     </Layout>
   );
 }
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<HomepageLoaderProps> {
+function ArticlesListLoading({ title, articles }: ArticlesListLoadingProps) {
+  if ('status' in articles) {
+    return redirect('/auth/login') as unknown as JSX.Element;
+  }
+
+  return <ArticlesList title={title} articles={articles} />
+}
+
+export async function loader({ request }: LoaderFunctionArgs): Promise<unknown> {
   const userID = retriveUserID();
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type");
@@ -39,12 +63,12 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<HomepageL
   }
 
   if (type && search) {
-    let response: Article[] | APIError = []
+    let response: Promise<Article[] | APIError>;
 
     if (type === "tag") {
-      response = await retrieveArticlesByTagName(search);
+      response = retrieveArticlesByTagName(search);
     } else {
-      response = await retrieveArticlesByAuthorName(search);
+      response = retrieveArticlesByAuthorName(search);
     }
 
     if ('status' in response) {
@@ -54,10 +78,10 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<HomepageL
     return { title: "Artigos encontrados", articles: response }
   }
 
-  const articles = await retrieveArticlesByAuthorID(userID);
+  const articles = retrieveArticlesByAuthorID(userID);
 
   if ('status' in articles) {
     return redirect("/auth/login") as unknown as HomepageLoaderProps;
   }
-  return { title: "Seus artigos", articles }
+  return defer({ title: "Seus artigos", articles });
 }
