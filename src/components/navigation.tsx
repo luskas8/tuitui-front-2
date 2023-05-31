@@ -176,8 +176,8 @@ function SearchGroup({ values, errors, handleOnChange }: ChildrenProps) {
   return (
     <div className="search-bar flex flex-row">
       <div className={`relative group flex border px-2 py-1 ${(errors && errors["search"]) ? "border-red-400 text-red-400" : ""}`}>
-        <input  ref={inputRef} onFocus={_ => updateShowList(_ => true)} onKeyUp={updateList} value={values["search"]} placeholder="Pesquise artigos aqui" onChange={handleOnChange} name="search" type="text" className="input-select focus:outline-none relative" />
-        <Up className={`w-5 cursor-pointer ${showList ? "visible" : "invisible"}`} onClick={_ => updateShowList(state => !state)} />
+        <input  ref={inputRef} onFocus={_ => updateShowList(_ => true)} onKeyUp={updateList} value={values["search"]} placeholder="Pesquise artigos aqui" onChange={handleOnChange} name="search" type="text" className="input-select focus:outline-none relative border-none focus:ring-transparent" />
+        <Up className={`w-5 cursor-pointer z-10 ${showList ? "visible" : "invisible"}`} onClick={_ => updateShowList(state => !state)} />
         <div className={`input-select--list ${showList ? "visible" : "invisible"}`}>
           <div className="w-full flex justify-around items-center bg-white text-black">
             <div className="w-full h-full relative flex justify-center items-center">

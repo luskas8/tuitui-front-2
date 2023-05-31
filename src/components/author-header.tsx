@@ -12,6 +12,7 @@ import { retriveUserID } from "../utilities/localStorage";
 import { Input } from "./inputs";
 import { Form } from "./form";
 import { deleteUserAccount, saveUserInformations } from "../services/user";
+import { z } from "zod";
 
 
 interface AuthorHeaderProps {
@@ -111,6 +112,11 @@ function EditAuthorProfileModal({ author, updateAuthor }: EditAuthorProfileModal
         type: "success",
       });
       toggleVisibility();
+    } else {
+      updateAlert({
+        message: "Erro ao atualizar informações!",
+        type: "error",
+      });
     }
     updateIsUpdating(false);
   }
@@ -124,6 +130,10 @@ function EditAuthorProfileModal({ author, updateAuthor }: EditAuthorProfileModal
         <Form
           initialValues={{ username: author.username, description: author.description }}
           onSubmit={handleUpdateAccount}
+          schemeValidation={z.object({
+            username: z.string().min(1, { message: "Nome usuário obrigatório" }),
+            description: z.string().min(1, { message: "Bio obrigatória" }),
+          })}
         >
           {({ values, errors, handleOnChange }) => {
             return (

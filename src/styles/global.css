@@ -18,4 +18,8 @@
   a > svg {
     @apply w-5 h-5 fill-current;
   }
+
+  .w-md-editor {
+    position: inherit !important;
+  }
 }

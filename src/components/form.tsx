@@ -42,7 +42,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(({ children, initialV
     updateSubmitting(false);
   }
 
-  return <form action="" className={className} onSubmit={(e) => handleSubmit(e)()} ref={formRef}>
+  return <form className={className} onSubmit={(e) => handleSubmit(e)()} ref={formRef}>
     {children({ values, errors, handleOnChange })}
   </form>
 });

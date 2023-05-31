@@ -4,6 +4,7 @@
 
 .input-select--list {
   @apply bg-white py-1 w-full absolute top-[100%] left-0 drop-shadow-sm;
+  overflow: auto !important;
 }
 
 .input-select--list-item {
@@ -16,4 +17,8 @@
 
 .input-select--list-item:hover {
   @apply bg-slate-300;
+}
+
+.input-select-tag:hover > ul {
+  @apply visible;
 }

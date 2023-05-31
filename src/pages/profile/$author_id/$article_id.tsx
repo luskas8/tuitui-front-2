@@ -24,7 +24,7 @@ interface ArticlePageProps {
 }
 
 
-export default function EditArticleLoading() {
+export default function ArticleLoading() {
   const { article } = useLoaderData() as ArticleLoadingProps;
 
   useEffect(() => {
