@@ -3,7 +3,7 @@ import { Article } from "../../@types/article";
 import ArticlesList from "../../components/articles-list";
 import Layout from "../../layouts/global";
 import { useAuth } from "../../hooks";
-import { retrieveArticlesByAuthorID, retrieveArticlesByAuthorName, retrieveArticlesByTagName } from "../../services/articles";
+import { retrieveArticles, retrieveArticlesByAuthorName, retrieveArticlesByTagName } from "../../services/articles";
 import { retriveUserID } from "../../utilities/localStorage";
 import { APIError } from "../../@types/global";
 import { Suspense, useEffect } from "react";
@@ -78,10 +78,10 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<unknown> 
     return { title: "Artigos encontrados", articles: response }
   }
 
-  const articles = retrieveArticlesByAuthorID(userID);
+  const articles = retrieveArticles();
 
   if ('status' in articles) {
     return redirect("/auth/login") as unknown as HomepageLoaderProps;
   }
-  return defer({ title: "Seus artigos", articles });
+  return defer({ title: "Últimos artigos", articles: articles });
 }

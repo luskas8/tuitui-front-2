@@ -13,7 +13,6 @@ import { useAlert, useAuth } from "../../../hooks";
 import Layout from "../../../layouts/global";
 import { createArticle } from "../../../services/articles";
 import { retriveTags } from "../../../services/tags";
-import { retrieveUserByID } from "../../../services/user";
 import { Dropdown } from "../../../components/dropdown";
 
 export default function CreateArticlePage() {
@@ -159,36 +158,11 @@ export default function CreateArticlePage() {
       return;
     }
 
-    const author = await retrieveUserByID(response.author);
-
-    if ('status' in author) {
-      updateAlert({
-        type: "success",
-        message: "Artigo criado com sucesso",
-      })
-      setIsSaving(false);
-      navigate(`/homepage`);
-      return;
-    }
-
-    setArticleInfo(_ => ({
-      _id: response._id,
-      author: {
-        _id: author._id,
-        description: author.description,
-        userEmail: author.userEmail,
-        username: author.username,
-      },
-      content: response.content,
-      title: response.title,
-      tags: response.tags || [],
-    }));
-
     updateAlert({
       type: "success",
       message: "Artigo criado com sucesso",
     })
-    navigate(`/profile/${response.author}/${response._id}`);
+    navigate(`/homepage`);
   }
 
   useEffect(() => {

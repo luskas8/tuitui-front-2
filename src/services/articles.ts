@@ -5,6 +5,27 @@ import { api } from "./api";
 import { apiErrorHandle } from "./errors";
 import { upsertTags } from "./tags";
 
+export async function retrieveArticles() : Promise<Article[] | APIError> {
+  const token = retriveUserAuthToken();
+  const response = await api.get(`/articles`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    params: {
+      lastUpdated: true
+    }
+  }).then(response => response).catch(apiErrorHandle)
+
+  if (response.status !== 200) {
+    return {
+      message: response.data.message,
+      status: response.status,
+    }
+  }
+
+  return response.data.data;
+}
+
 export async function retrieveArticlesByAuthorID(authorID: string): Promise<Article[] | APIError> {
   const token = retriveUserAuthToken();
   const response = await api.get(`/articles`, {
