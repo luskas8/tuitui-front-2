@@ -18,6 +18,8 @@ export default function ArticlesList({ title, articles }: ArticlesListProps) {
   const hasArticles = articles.length > 0;
   const loggedUser = retriveUserID();
 
+  const reversedArticles = [...articles].reverse();
+
   return (
     <section className="w-full">
       {title && <h1 className="article-list--title text-lg font-bold leading-none tracking-tight text-gray-900 md:text-xl lg:text-2xl">{title}</h1>}
@@ -26,7 +28,7 @@ export default function ArticlesList({ title, articles }: ArticlesListProps) {
           <h2 className="text-black text-xl font-bold">Nenhum artigo encontrado</h2>
           <p className="text-gray-500">Que tal criar um hein? <Link.Default to={`/profile/${loggedUser}/create`}>bora lá!</Link.Default></p>
         </div>}
-        { articles.map((article) => (<ArticleCard key={article._id} article={article} />) )}
+        {reversedArticles.map((article) => (<ArticleCard key={article._id} article={article} />) )}
       </ul>
     </section>
   );
